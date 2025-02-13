@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "TNrE4axNZec=",
+  "success": true,
+  "projectFilePath": "/home/magesty_/Projects/MusicPlayer/src/MusicPlayer.Audio/MusicPlayer.Audio.csproj",
+  "expectedPackageFiles": [
+    "/home/magesty_/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.1/microsoft.aspnetcore.app.ref.9.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
