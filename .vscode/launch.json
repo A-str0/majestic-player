@@ -1,26 +1,24 @@
+// .vscode/launch.json
 {
     "version": "0.2.0",
     "configurations": [
         {
-            // Use IntelliSense to find out which attributes exist for C# debugging
-            // Use hover for the description of the existing attributes
-            // For further information visit https://github.com/dotnet/vscode-csharp/blob/main/debugger-launchjson.md
-            "name": ".NET Core Launch (console)",
+            "name": "Запуск (Windows)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
-            // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/MusicPlayer.App/bin/Debug/net9.0/MusicPlayer.App.dll",
+            "program": "${workspaceFolder}/MusicPlayer.Avalonia/bin/Debug/net8.0/MusicPlayer.Avalonia.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/src/MusicPlayer.App",
-            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
-            "console": "internalConsole",
-            "stopAtEntry": false
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole"
         },
         {
-            "name": ".NET Core Attach",
+            "name": "Запуск (Linux)",
             "type": "coreclr",
-            "request": "attach"
+            "request": "launch",
+            "program": "dotnet",
+            "args": ["run", "--project", "MusicPlayer.Avalonia"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
         }
     ]
 }

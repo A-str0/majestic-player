@@ -1,41 +1,12 @@
+// .vscode/tasks.json
 {
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "Собрать Android",
             "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/src/MusicPlayer.App/MusicPlayer.App.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary;ForceNoAlign"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "publish",
-                "${workspaceFolder}/src/MusicPlayer.App/MusicPlayer.App.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary;ForceNoAlign"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "watch",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "run",
-                "--project",
-                "${workspaceFolder}/src/MusicPlayer.App/MusicPlayer.App.csproj"
-            ],
-            "problemMatcher": "$msCompile"
+            "args": ["build", "MusicPlayer.Avalonia", "-t:Run", "-f:net8.0-android"],
+            "group": "build"
         }
     ]
 }
