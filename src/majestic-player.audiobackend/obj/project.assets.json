@@ -1,0 +1,199 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0": {
+      "LibVLCSharp/3.9.2": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/LibVLCSharp.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/LibVLCSharp.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "VideoLAN.LibVLC.Android/3.5.3": {
+        "type": "package",
+        "build": {
+          "build/VideoLAN.LibVLC.Android.targets": {}
+        }
+      },
+      "majestic-player.core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/majestic-player.core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/majestic-player.core.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "LibVLCSharp/3.9.2": {
+      "sha512": "PbDIVdrIIf9nMizePhv1BMoMSiIn04beCHD2MAhk2DcueckTQOLoHycXIW3lTXB+MSZ0PWWC8eGwFzz4NmxVKQ==",
+      "type": "package",
+      "path": "libvlcsharp/3.9.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/monoandroid81/LibVLCSharp.Android.AWindow.dll",
+        "lib/monoandroid81/LibVLCSharp.dll",
+        "lib/monoandroid81/LibVLCSharp.xml",
+        "lib/net40/LibVLCSharp.dll",
+        "lib/net40/LibVLCSharp.xml",
+        "lib/net471/LibVLCSharp.dll",
+        "lib/net471/LibVLCSharp.xml",
+        "lib/net6.0-windows10.0.17763/LibVLCSharp.dll",
+        "lib/net6.0-windows10.0.17763/LibVLCSharp.pri",
+        "lib/net6.0-windows10.0.17763/LibVLCSharp.xml",
+        "lib/net6.0/LibVLCSharp.dll",
+        "lib/net6.0/LibVLCSharp.xml",
+        "lib/net8.0-android34.0/LibVLCSharp.dll",
+        "lib/net8.0-android34.0/LibVLCSharp.xml",
+        "lib/net8.0-ios18.0/LibVLCSharp.dll",
+        "lib/net8.0-ios18.0/LibVLCSharp.xml",
+        "lib/net8.0-macos15.0/LibVLCSharp.dll",
+        "lib/net8.0-macos15.0/LibVLCSharp.xml",
+        "lib/net8.0-tvos18.0/LibVLCSharp.dll",
+        "lib/net8.0-tvos18.0/LibVLCSharp.xml",
+        "lib/net8.0-windows10.0.19041/LibVLCSharp.dll",
+        "lib/net8.0-windows10.0.19041/LibVLCSharp.pri",
+        "lib/net8.0-windows10.0.19041/LibVLCSharp.xml",
+        "lib/net8.0/LibVLCSharp.dll",
+        "lib/net8.0/LibVLCSharp.xml",
+        "lib/netstandard1.1/LibVLCSharp.dll",
+        "lib/netstandard1.1/LibVLCSharp.xml",
+        "lib/netstandard2.0/LibVLCSharp.dll",
+        "lib/netstandard2.0/LibVLCSharp.xml",
+        "lib/netstandard2.1/LibVLCSharp.dll",
+        "lib/netstandard2.1/LibVLCSharp.xml",
+        "lib/uap10.0.18362/LibVLCSharp.dll",
+        "lib/uap10.0.18362/LibVLCSharp.pri",
+        "lib/uap10.0.18362/LibVLCSharp.xml",
+        "lib/uap10.0.18362/LibVLCSharp/LibVLCSharp.xr.xml",
+        "lib/xamarinios10/LibVLCSharp.dll",
+        "lib/xamarinios10/LibVLCSharp.xml",
+        "lib/xamarinmac20/LibVLCSharp.dll",
+        "lib/xamarinmac20/LibVLCSharp.xml",
+        "libvlcsharp.3.9.2.nupkg.sha512",
+        "libvlcsharp.nuspec"
+      ]
+    },
+    "VideoLAN.LibVLC.Android/3.5.3": {
+      "sha512": "uGRmy3089vSLwiouguZ4WXaPjrXqms+b0PAGwsEbpFQ4io7Q7gY1KlV2QnEb3/FXPAZGf8IxpZ4RVzUtDg+MTw==",
+      "type": "package",
+      "path": "videolan.libvlc.android/3.5.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/VideoLAN.LibVLC.Android.targets",
+        "build/android-armv7/libc++_shared.so",
+        "build/android-armv7/libvlc.so",
+        "build/android-armv8/libc++_shared.so",
+        "build/android-armv8/libvlc.so",
+        "build/android-x86/libc++_shared.so",
+        "build/android-x86/libvlc.so",
+        "build/android-x86_64/libc++_shared.so",
+        "build/android-x86_64/libvlc.so",
+        "icon.png",
+        "videolan.libvlc.android.3.5.3.nupkg.sha512",
+        "videolan.libvlc.android.nuspec"
+      ]
+    },
+    "majestic-player.core/1.0.0": {
+      "type": "project",
+      "path": "../majestic-player.core/majestic-player.core.csproj",
+      "msbuildProject": "../majestic-player.core/majestic-player.core.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0": [
+      "LibVLCSharp >= 3.9.2",
+      "VideoLAN.LibVLC.Android >= 3.5.3",
+      "majestic-player.core >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\magesty_\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\magesty_\\Projects\\majestic-player\\src\\majestic-player.audiobackend\\majestic-player.audiobackend.csproj",
+      "projectName": "majestic-player.audiobackend",
+      "projectPath": "C:\\Users\\magesty_\\Projects\\majestic-player\\src\\majestic-player.audiobackend\\majestic-player.audiobackend.csproj",
+      "packagesPath": "C:\\Users\\magesty_\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\magesty_\\Projects\\majestic-player\\src\\majestic-player.audiobackend\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\magesty_\\AppData\\Roaming\\NuGet\\NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "projectReferences": {
+            "C:\\Users\\magesty_\\Projects\\majestic-player\\src\\majestic-player.core\\majestic-player.core.csproj": {
+              "projectPath": "C:\\Users\\magesty_\\Projects\\majestic-player\\src\\majestic-player.core\\majestic-player.core.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.200"
+    },
+    "frameworks": {
+      "net9.0": {
+        "targetAlias": "net9.0",
+        "dependencies": {
+          "LibVLCSharp": {
+            "target": "Package",
+            "version": "[3.9.2, )"
+          },
+          "VideoLAN.LibVLC.Android": {
+            "target": "Package",
+            "version": "[3.5.3, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

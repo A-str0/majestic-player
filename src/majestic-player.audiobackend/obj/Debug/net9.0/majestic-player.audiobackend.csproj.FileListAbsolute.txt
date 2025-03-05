@@ -1,0 +1,16 @@
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\bin\Debug\net9.0\majestic-player.audiobackend.deps.json
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\bin\Debug\net9.0\majestic-player.audiobackend.dll
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\bin\Debug\net9.0\majestic-player.audiobackend.pdb
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\bin\Debug\net9.0\majestic-player.core.dll
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\bin\Debug\net9.0\majestic-player.core.pdb
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\majestic-player.audiobackend.csproj.AssemblyReference.cache
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\majestic-player.audiobackend.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\majestic-player.audiobackend.AssemblyInfoInputs.cache
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\majestic-player.audiobackend.AssemblyInfo.cs
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\majestic-player.audiobackend.csproj.CoreCompileInputs.cache
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\majestic-player.audiobackend.sourcelink.json
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\majestic.2DDA1D9F.Up2Date
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\majestic-player.audiobackend.dll
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\refint\majestic-player.audiobackend.dll
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\majestic-player.audiobackend.pdb
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.audiobackend\obj\Debug\net9.0\ref\majestic-player.audiobackend.dll
