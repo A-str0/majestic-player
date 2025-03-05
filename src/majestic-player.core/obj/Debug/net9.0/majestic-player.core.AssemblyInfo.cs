@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("majestic-player.core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2f1b98543d5aaec127b4be6bce09dd9fbc12f011")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+015313a7fddd39998916ee1bb3d7636d93aa330f")]
 [assembly: System.Reflection.AssemblyProductAttribute("majestic-player.core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("majestic-player.core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

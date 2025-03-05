@@ -1,0 +1,12 @@
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\bin\Debug\net9.0\majestic-player.core.deps.json
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\bin\Debug\net9.0\majestic-player.core.dll
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\bin\Debug\net9.0\majestic-player.core.pdb
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\obj\Debug\net9.0\majestic-player.core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\obj\Debug\net9.0\majestic-player.core.AssemblyInfoInputs.cache
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\obj\Debug\net9.0\majestic-player.core.AssemblyInfo.cs
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\obj\Debug\net9.0\majestic-player.core.csproj.CoreCompileInputs.cache
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\obj\Debug\net9.0\majestic-player.core.sourcelink.json
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\obj\Debug\net9.0\majestic-player.core.dll
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\obj\Debug\net9.0\refint\majestic-player.core.dll
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\obj\Debug\net9.0\majestic-player.core.pdb
+C:\Users\magesty_\Projects\majestic-player\src\majestic-player.core\obj\Debug\net9.0\ref\majestic-player.core.dll

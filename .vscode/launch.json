@@ -1,24 +1,16 @@
-// .vscode/launch.json
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Запуск (Windows)",
-            "type": "coreclr",
-            "request": "launch",
-            "program": "${workspaceFolder}/MusicPlayer.Avalonia/bin/Debug/net8.0/MusicPlayer.Avalonia.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "console": "internalConsole"
-        },
-        {
-            "name": "Запуск (Linux)",
-            "type": "coreclr",
-            "request": "launch",
-            "program": "dotnet",
-            "args": ["run", "--project", "MusicPlayer.Avalonia"],
-            "cwd": "${workspaceFolder}",
-            "console": "integratedTerminal"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Tests Project",
+      "type": "coreclr",
+      "request": "launch",
+      // "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/Tests/bin/Debug/net9.0/Tests.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Tests",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    }
+  ]
 }
