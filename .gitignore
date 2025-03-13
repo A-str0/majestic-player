@@ -1,3 +1,48 @@
-.vscode/
-*.cache
-src/**/Debug/
+# Общие исключения для C# и .NET
+**/[Bb]in/
+**/[Oo]bj/
+**/.vs/
+**/*.user
+**/*.suo
+**/*.userprefs
+**/*.cache
+**/*.log
+**/.idea/
+**/.vscode/
+*.swp
+
+# Файлы SQLite и локальных баз данных
+*.db
+*.sqlite
+*.db-shm
+*.db-wal
+
+# NuGet и зависимости
+**/packages/
+**/[Nn]uGet.exe
+*.nupkg
+**/NuGet.Config
+
+# Специфично для Avalonia (если используется)
+**/avalonia-portable.json
+
+# Сборки и исполняемые файлы
+*.exe
+*.dll
+*.pdb
+*.xml
+
+# Тестовые результаты
+**/TestResults/
+
+# Резервные копии и временные файлы
+*.bak
+*.tmp
+*.~*
+
+# Файлы Rider (если используется)
+.idea/
+*.sln.iml
+
+# Файлы macOS
+.DS_Store
