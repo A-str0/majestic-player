@@ -25,4 +25,9 @@
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\majestic-player.core\majestic-player.core.csproj" />
+    <ProjectReference Include="..\majestic-player.infrastructure\majestic-player.infrastructure.csproj" />
+  </ItemGroup>
 </Project>
