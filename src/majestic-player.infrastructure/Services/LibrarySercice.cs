@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace majestic_player.infrastructure.Services
 {
-    public class TrackLibraryService
+    public class LibraryService
     {
         private readonly AppDBContext _context;
 
-        public TrackLibraryService(AppDBContext context)
+        public LibraryService(AppDBContext context)
         {
             _context = context;
         }
@@ -17,19 +17,5 @@ namespace majestic_player.infrastructure.Services
         {
             return await _context.Tracks.ToListAsync();
         }
-
-        // public async Task<List<Track>> GetTracksByGenreAsync(string genre)
-        // {
-        //     return await _context.Tracks
-        //         .Where(t => t.Genre == genre)
-        //         .ToListAsync();
-        // }
-
-        // public async Task<List<Track>> GetTracksSortedByDateAsync()
-        // {
-        //     return await _context.Tracks
-        //         .OrderByDescending(t => t.DateAdded)
-        //         .ToListAsync();
-        // }
     }
 }
