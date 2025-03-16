@@ -1,8 +1,10 @@
-﻿using Avalonia;
+﻿﻿﻿﻿﻿﻿﻿﻿using Avalonia;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using majestic_player.infrastructure.Models;
 using majestic_player.infrastructure.Services;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace majestic_player.ui;
 
@@ -11,20 +13,28 @@ sealed class Program
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
-    public static ServiceCollection? Services { get; private set; }
+    public static ServiceProvider? Services { get; private set; }
 
     [STAThread]
     public static void Main(string[] args) 
     {
+        ConfigureServices();
+
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 
-        AppDBContext context = new AppDBContext();
+        Console.WriteLine("Ready");
+    }
 
-        Services = new ServiceCollection();
-
-        Services.AddDbContext<AppDBContext>();
-        Services.AddSingleton<AudioPlayer>();
-        Services.AddSingleton<LibraryService>();
+    public static void ConfigureServices()
+    {
+        var services = new ServiceCollection();
+        
+        services.AddDbContext<AppDBContext>();
+        
+        services.AddSingleton<AudioPlayer>();
+        services.AddSingleton<LibraryService>();
+        
+        Services = services.BuildServiceProvider();
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
