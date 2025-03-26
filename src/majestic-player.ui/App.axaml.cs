@@ -6,6 +6,7 @@ using System.Linq;
 using Avalonia.Markup.Xaml;
 using majestic_player.ui.ViewModels;
 using majestic_player.ui.Views;
+using Avalonia.Controls;
 
 namespace majestic_player.ui;
 
@@ -23,9 +24,13 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
+
+            var window = new Window();
+            var storage = window.StorageProvider;
+
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = new MainWindowViewModel(storage),
             };
         }
 

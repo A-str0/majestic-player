@@ -17,7 +17,8 @@ namespace majestic_player.infrastructure.Models
 
         public AudioPlayer()
         {
-            Core.Initialize(); // Initialize LibVLC
+            Core.Initialize();
+            
             _libVLC = new LibVLC();
             _mediaPlayer = new MediaPlayer(_libVLC);
         }
@@ -34,6 +35,8 @@ namespace majestic_player.infrastructure.Models
 
             using var media = new Media(_libVLC, new Uri(track.Source));
             await Task.Run(() => _mediaPlayer.Play(media));
+
+            
             TrackChanged?.Invoke(track);
         }
 

@@ -4,11 +4,12 @@
         xmlns:models="using:majestic_player.core.Models"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="majestic_player.ui.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="majestic_player.ui">
+        Title="Majestic Player">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -16,15 +17,30 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <ListBox ItemsSource="{Binding AllTracks}">
-        <ListBox.ItemTemplate>
-            <DataTemplate>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Title}" /> 
-                    <!-- <TextBlock Text="PLACEHOLDER" Margin="0,0,10,0"/> -->
-                </StackPanel>
-            </DataTemplate>
-        </ListBox.ItemTemplate>
-    </ListBox>
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Command="{Binding AddFolderCommand}">AddFolder</Button>
+        </StackPanel>
+
+        <!-- <StackPanel>
+            <Button Command="{Binding PlayTrackCommand}" CommandParameter="C:\Users\magesty_\Downloads\MORGENSHTERN_-_POVOD_79042608.mp3">Test</Button>
+        </StackPanel> -->
+
+        <ListBox ItemsSource="{Binding AllTracks}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <!-- <StackPanel Orientation="Horizontal"> -->
+                        <Button Command="{Binding $parent.((vm:MainWindowViewModel)DataContext).PlayTrackCommand}"
+                                CommandParameter="{Binding}"
+                                Content="{Binding Title}">
+                        </Button>
+                        <!-- <TextBlock Text="{Binding Title}" />  -->
+                    <!-- </StackPanel> -->
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+
+    
 
 </Window>

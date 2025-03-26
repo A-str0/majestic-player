@@ -1,10 +1,8 @@
-﻿﻿﻿﻿﻿﻿﻿﻿using Avalonia;
+﻿﻿using Avalonia;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using majestic_player.infrastructure.Models;
 using majestic_player.infrastructure.Services;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace majestic_player.ui;
 
@@ -33,6 +31,7 @@ sealed class Program
         
         services.AddSingleton<AudioPlayer>();
         services.AddSingleton<LibraryService>();
+        services.AddSingleton<FileScannerService>();
         
         Services = services.BuildServiceProvider();
     }
@@ -42,5 +41,6 @@ sealed class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace();
+            .LogToTrace()
+            .UseReactiveUI();
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using majestic_player.infrastructure.Models;
 
@@ -10,9 +11,11 @@ using majestic_player.infrastructure.Models;
 namespace majestic_player.infrastructure.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250322082539_RemoveUnique")]
+    partial class RemoveUnique
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
@@ -44,10 +47,6 @@ namespace majestic_player.infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<TimeSpan>("Duration")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Hash")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("PlaylistId")
