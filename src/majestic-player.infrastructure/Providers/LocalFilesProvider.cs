@@ -8,13 +8,15 @@ namespace majestic_player.infrastructure.Providers
     {
         public SourceType SourceType { get; set; } = SourceType.Local;
 
+        //TODO: разбораться что это вообще все такое и как использовать, ибо я забыл
         public async Task<Track> GetTrackMetadataAsync(string source)
         {
             FileInfo fileInfo = new FileInfo(source);
 
             return await Task.FromResult(new Track {
                 Title = Path.GetFileNameWithoutExtension(source),
-                Source = source
+                Source = source,
+                Hash = "Unknown"
             });
         }
 

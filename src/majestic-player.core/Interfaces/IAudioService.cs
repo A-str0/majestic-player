@@ -15,9 +15,9 @@ namespace majestic_player.core.Interfaces
         // event Action<PlayerState>? StateChanged;
         
         Task PlayAsync(Track track);
-        void Pause();
-        void Resume();
-        void Stop();
+        void PlayPause();
+        void Next();
+        void Previous();
         void SetVolume(float volume); // 0.0 - 1.0
     }
 }

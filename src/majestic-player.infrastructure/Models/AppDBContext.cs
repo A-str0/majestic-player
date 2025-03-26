@@ -10,6 +10,8 @@ namespace majestic_player.infrastructure.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
+            Console.WriteLine("Configuring ", this);
+
             // TODO: разделить для разных ОС
             string dbPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -17,6 +19,8 @@ namespace majestic_player.infrastructure.Models
                 "database.db"
             );
             options.UseSqlite($"Data Source={dbPath}");
+
+            Console.WriteLine("", dbPath);
         }
     }
 }
