@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Windows.Input;
 using System.Reactive;
 using System.Collections.ObjectModel;
@@ -16,7 +16,7 @@ namespace majestic_player.ui.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly LibraryService? _libraryService;
-    private readonly FileScannerService? _fileScannerService;
+    private readonly FileHandlerService? _fileScannerService;
     private readonly IStorageProvider? _storageProvider;
     private readonly AudioPlayer? _audioPlayer;
 
@@ -25,6 +25,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public ICommand AddFolderCommand { get; private set; }
     public ReactiveCommand<Track, Unit> PlayTrackCommand { get; private set; }
+    public ICommand PlayPauseCommand { get; private set; }
+    public ICommand NextCommand { get; private set; }
+    public ICommand PreviousCommand { get; private set; }
 
     // TODO: убрать этот способ
     private async void TestSetup() { await ScanFolderForAudio("C:/Users/magesty_/Downloads/"); }
@@ -34,13 +37,17 @@ public partial class MainWindowViewModel : ViewModelBase
         Console.WriteLine("Started");
 
         // SetupCommands
-        AddFolderCommand = ReactiveCommand.Create(() => { AddFolderDialog(); });
+        AddFolderCommand = ReactiveCommand.Create(AddFolderDialog);
         PlayTrackCommand = ReactiveCommand.Create<Track>(PlayTrack);
+
+        PlayPauseCommand = ReactiveCommand.Create(PlayPause);
+        NextCommand = ReactiveCommand.Create(Next);
+        PreviousCommand = ReactiveCommand.Create(Previous);
     
         IServiceProvider serviceProvider = Program.Services.CreateScope().ServiceProvider;
 
         _libraryService = serviceProvider.GetRequiredService<LibraryService>();
-        _fileScannerService = serviceProvider.GetRequiredService<FileScannerService>();
+        _fileScannerService = serviceProvider.GetRequiredService<FileHandlerService>();
         _storageProvider = storageProvider;
 
         _audioPlayer = serviceProvider.GetRequiredService<AudioPlayer>();
@@ -68,12 +75,10 @@ public partial class MainWindowViewModel : ViewModelBase
         Console.WriteLine($"Test {msg}");
     }
 
-    public async void PlayTrack(Track track)
-
-    {
-        Console.WriteLine("Start playing: " + track.Source);
-        await _audioPlayer?.PlayAsync(track);
-    }
+    public async void PlayTrack(Track track) => await _audioPlayer?.PlayAsync(track);
+    public void PlayPause() => _audioPlayer?.PlayPause();
+    public void Next() => _audioPlayer?.Next();
+    public void Previous() => _audioPlayer?.Previous();
 
     public async void AddFolderDialog()
     {

@@ -10,7 +10,8 @@ namespace majestic_player.core.Models
         private string _title = String.Empty;
         private string _artist = String.Empty;
         private string _album = String.Empty;
-        private string _fileExtention = String.Empty;
+        private TimeSpan _duration = TimeSpan.FromSeconds(0);
+        private UInt16 _year = 0;
 
         public Guid Id 
         { 
@@ -37,13 +38,17 @@ namespace majestic_player.core.Models
             get => _album; 
             set => SetProperty(ref _album, value??String.Empty);
         }
-        private string? FileExtention
+        public TimeSpan? Duration 
         {
-            get => _fileExtention;
-            set => SetProperty(ref _fileExtention, value??String.Empty);
+            get => _duration; 
+            set => SetProperty(ref _duration, value??TimeSpan.FromSeconds(0)); 
         }
-        
-        public TimeSpan Duration { get; set; }
+        public UInt16? Year
+        {
+            get => _year;
+            set => SetProperty(ref _year, value??0);
+        }
+
         public string? Source { get; set; } // directory path OR url
         public SourceType SourceType { get; set; }
     }

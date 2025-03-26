@@ -32,7 +32,7 @@ sealed class Program
         
         services.AddSingleton<AudioPlayer>();
         services.AddSingleton<LibraryService>();
-        services.AddSingleton<FileScannerService>();
+        services.AddSingleton<FileHandlerService>();
         
         Services = services.BuildServiceProvider();
     }

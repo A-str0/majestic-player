@@ -15,18 +15,14 @@ namespace majestic_player.infrastructure.Models
 
         public event Action<Track>? TrackChanged;
 
+        public bool IsPlaying { get => _mediaPlayer.IsPlaying; }
+
         public AudioPlayer()
         {
             Core.Initialize();
             
             _libVLC = new LibVLC();
             _mediaPlayer = new MediaPlayer(_libVLC);
-        }
-
-        public void Play(string filePath)
-        {
-            Media media = new Media(_libVLC, new Uri(filePath));
-            _mediaPlayer.Play(media);
         }
 
         public async Task PlayAsync(Track track)
@@ -40,19 +36,19 @@ namespace majestic_player.infrastructure.Models
             TrackChanged?.Invoke(track);
         }
 
-        public void Pause()
+        public void PlayPause()
         {
-            _mediaPlayer.Pause();
+            _mediaPlayer.SetPause(!_mediaPlayer.IsPlaying);
         }
 
-        public void Resume()
+        public void Next()
         {
-            _mediaPlayer.SetPause(false);
+            // TODO: implement next track logic
         }
 
-        public void Stop()
+        public void Previous()
         {
-            _mediaPlayer.Stop();
+            // TODO: implement previous track logic
         }
 
         public void SetVolume(float volume)

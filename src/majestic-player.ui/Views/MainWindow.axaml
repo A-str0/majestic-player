@@ -17,30 +17,58 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button Command="{Binding AddFolderCommand}">AddFolder</Button>
-        </StackPanel>
+    <DockPanel LastChildFill="True">
+        <!-- Управление треком -->
+        <Border DockPanel.Dock="Bottom" 
+                Height="80" 
+                Background="#333333"
+                Padding="10">
+            <StackPanel Spacing="10"
+                        VerticalAlignment="Center">
+                <!-- Название трека -->
+                <!-- <TextBlock Text="Binding CurrentTrack.Title"
+                           Foreground="White"
+                           FontSize="16"/> -->
+                
+                <!-- Прогресс-бар -->
+                <!-- <Slider Minimum="0" 
+                        Maximum="{Binding TrackDuration.TotalSeconds}"
+                        Value="{Binding CurrentPosition}"/> -->
+                
+                <!-- Кнопки управления -->
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="20">
+                    <Button Content="⏮" Command="{Binding PreviousCommand}"/>
+                    <Button Content="PlayPause" 
+                            Command="{Binding PlayPauseCommand}"/>
+                    <Button Content="⏭" Command="{Binding NextCommand}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
 
-        <!-- <StackPanel>
-            <Button Command="{Binding PlayTrackCommand}" CommandParameter="C:\Users\magesty_\Downloads\MORGENSHTERN_-_POVOD_79042608.mp3">Test</Button>
-        </StackPanel> -->
+        <ScrollViewer>
+            <StackPanel>
+                <!-- Панель добавления папок -->
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <Button Command="{Binding AddFolderCommand}" 
+                            Content="Add Folder"
+                            Margin="0,0,5,0"/>
+                </StackPanel>
 
-        <ListBox ItemsSource="{Binding AllTracks}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <!-- <StackPanel Orientation="Horizontal"> -->
-                        <Button Command="{Binding $parent.((vm:MainWindowViewModel)DataContext).PlayTrackCommand}"
-                                CommandParameter="{Binding}"
-                                Content="{Binding Title}">
-                        </Button>
-                        <!-- <TextBlock Text="{Binding Title}" />  -->
-                    <!-- </StackPanel> -->
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </StackPanel>
-
-    
-
+                <!-- Список треков -->
+                <ListBox ItemsSource="{Binding AllTracks}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding $parent.((vm:MainWindowViewModel)DataContext).PlayTrackCommand}"
+                                    CommandParameter="{Binding}"
+                                    Content="{Binding Title}"
+                                    HorizontalContentAlignment="Left"
+                                    Width="300"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
 </Window>

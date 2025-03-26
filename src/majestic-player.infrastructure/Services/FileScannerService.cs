@@ -4,7 +4,7 @@ using TagLib;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
-public class FileScannerService
+public class FileHandlerService
 {
     private static readonly string[] SupportedExtensions = { ".mp3", ".flac", ".wav", ".ogg" };
 
@@ -24,10 +24,10 @@ public class FileScannerService
             {
                 Hash = ComputeFileHash(filePath),
                 Title = file.Tag.Title ?? Path.GetFileNameWithoutExtension(filePath),
-                Artist = file.Tag.FirstPerformer ?? "Unknown",
-                Album = file.Tag.Album ?? "Unknown",
+                Artist = file.Tag.FirstPerformer ?? "ADAPTIVEREADING",
+                Album = file.Tag.Album,
                 Duration = file.Properties.Duration,
-                // Year = (int)(file.Tag.Year > 0 ? file.Tag.Year : 0),
+                Year = (UInt16)file.Tag.Year,
                 Source = filePath
             };
         }
