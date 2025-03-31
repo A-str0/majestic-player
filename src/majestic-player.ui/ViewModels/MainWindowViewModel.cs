@@ -10,24 +10,30 @@ using majestic_player.core.Models;
 using majestic_player.infrastructure.Services;
 using majestic_player.infrastructure.Models;
 using ReactiveUI;
+using System.Linq;
 
 namespace majestic_player.ui.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    #region Services
     private readonly LibraryService? _libraryService;
     private readonly FileHandlerService? _fileScannerService;
     private readonly IStorageProvider? _storageProvider;
+    private readonly PlaybackQueueService? _playbackQueueService;
     private readonly AudioPlayer? _audioPlayer;
+    #endregion
 
     public ObservableCollection<Track> AllTracks { get; } = new();
     public ObservableCollection<string> SelectedFolders { get; } = new();
 
+    #region Commands
     public ICommand AddFolderCommand { get; private set; }
     public ReactiveCommand<Track, Unit> PlayTrackCommand { get; private set; }
     public ICommand PlayPauseCommand { get; private set; }
     public ICommand NextCommand { get; private set; }
     public ICommand PreviousCommand { get; private set; }
+    #endregion
 
     // TODO: убрать этот способ
     private async void TestSetup() { await ScanFolderForAudio("C:/Users/magesty_/Downloads/"); }
@@ -41,17 +47,17 @@ public partial class MainWindowViewModel : ViewModelBase
         PlayTrackCommand = ReactiveCommand.Create<Track>(PlayTrack);
 
         PlayPauseCommand = ReactiveCommand.Create(PlayPause);
-        NextCommand = ReactiveCommand.Create(Next);
-        PreviousCommand = ReactiveCommand.Create(Previous);
+        NextCommand = ReactiveCommand.Create(PlayNextTrackInQueue);
+        PreviousCommand = ReactiveCommand.Create(PlayPreviousTrackInQueue);
     
         IServiceProvider serviceProvider = Program.Services.CreateScope().ServiceProvider;
 
         _libraryService = serviceProvider.GetRequiredService<LibraryService>();
         _fileScannerService = serviceProvider.GetRequiredService<FileHandlerService>();
         _storageProvider = storageProvider;
+        _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
 
         _audioPlayer = serviceProvider.GetRequiredService<AudioPlayer>();
-
 
         // TODO: убрать этот способ
         TestSetup();
@@ -59,6 +65,7 @@ public partial class MainWindowViewModel : ViewModelBase
         LoadTracks();
     }
 
+    // TODO: пересмотреть подобную загрузку
     private async void LoadTracks()
     {
         Console.WriteLine("Loading tracks...");
@@ -75,10 +82,26 @@ public partial class MainWindowViewModel : ViewModelBase
         Console.WriteLine($"Test {msg}");
     }
 
-    public async void PlayTrack(Track track) => await _audioPlayer?.PlayAsync(track);
+    public async void PlayTrack(Track track)
+    {
+        if (_playbackQueueService?.Queue.Count() == 0)
+        {
+            _playbackQueueService.CreateQueue(track, AllTracks);
+        }
+
+        await _audioPlayer?.PlayAsync(track);
+    }
     public void PlayPause() => _audioPlayer?.PlayPause();
-    public void Next() => _audioPlayer?.Next();
-    public void Previous() => _audioPlayer?.Previous();
+    public async Task PlayNextTrackInQueue()
+    {
+        Track nextTrack = _playbackQueueService?.ToNextTrackInQueue();
+        await _audioPlayer?.PlayAsync(nextTrack);
+    } 
+    public async void PlayPreviousTrackInQueue() 
+    {
+        Track prevTrack = _playbackQueueService?.ToPreviousTrackInQueue();
+        await _audioPlayer?.PlayAsync(prevTrack);
+    }
 
     public async void AddFolderDialog()
     {
@@ -98,6 +121,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    // TODO: пересмотреть целесообразность нахождения этой функции здесь
     private async Task ScanFolderForAudio(string folderPath)
     {
         if (_fileScannerService == null)

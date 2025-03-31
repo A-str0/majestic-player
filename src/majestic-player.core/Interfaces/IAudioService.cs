@@ -7,7 +7,6 @@ namespace majestic_player.core.Interfaces
     /// </summary>
     public interface IAudioService
     {
-        public Track? CurrentTrack { get; protected set; }
         // TODO: Систему состояний плеера
         // public PlayerState State { get; protected set; }
         
@@ -16,8 +15,6 @@ namespace majestic_player.core.Interfaces
         
         Task PlayAsync(Track track);
         void PlayPause();
-        void Next();
-        void Previous();
         void SetVolume(float volume); // 0.0 - 1.0
     }
 }

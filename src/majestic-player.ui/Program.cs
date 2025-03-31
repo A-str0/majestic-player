@@ -4,6 +4,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using majestic_player.infrastructure.Models;
 using majestic_player.infrastructure.Services;
+using Avalonia.Platform.Storage;
 
 namespace majestic_player.ui;
 
@@ -33,6 +34,7 @@ sealed class Program
         services.AddSingleton<AudioPlayer>();
         services.AddSingleton<LibraryService>();
         services.AddSingleton<FileHandlerService>();
+        services.AddSingleton<PlaybackQueueService>();
         
         Services = services.BuildServiceProvider();
     }

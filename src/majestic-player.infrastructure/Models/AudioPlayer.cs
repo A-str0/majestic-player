@@ -1,8 +1,6 @@
 using LibVLCSharp.Shared;
 using majestic_player.core.Interfaces;
 using majestic_player.core.Models;
-using System;
-using System.Threading.Tasks;
 
 namespace majestic_player.infrastructure.Models
 {
@@ -11,11 +9,10 @@ namespace majestic_player.infrastructure.Models
         private LibVLC _libVLC;
         private MediaPlayer _mediaPlayer;
 
-        public Track? CurrentTrack { get; set; }
+        public bool IsPlaying { get => _mediaPlayer.IsPlaying; }
 
         public event Action<Track>? TrackChanged;
-
-        public bool IsPlaying { get => _mediaPlayer.IsPlaying; }
+        public event Action? EndReached;
 
         public AudioPlayer()
         {
@@ -23,6 +20,8 @@ namespace majestic_player.infrastructure.Models
             
             _libVLC = new LibVLC();
             _mediaPlayer = new MediaPlayer(_libVLC);
+
+            _mediaPlayer.EndReached += MediaPlayer_EndReached;
         }
 
         public async Task PlayAsync(Track track)
@@ -31,24 +30,13 @@ namespace majestic_player.infrastructure.Models
 
             using var media = new Media(_libVLC, new Uri(track.Source));
             await Task.Run(() => _mediaPlayer.Play(media));
-
             
             TrackChanged?.Invoke(track);
         }
 
         public void PlayPause()
         {
-            _mediaPlayer.SetPause(!_mediaPlayer.IsPlaying);
-        }
-
-        public void Next()
-        {
-            // TODO: implement next track logic
-        }
-
-        public void Previous()
-        {
-            // TODO: implement previous track logic
+            _mediaPlayer.SetPause(_mediaPlayer.IsPlaying);
         }
 
         public void SetVolume(float volume)
@@ -60,6 +48,11 @@ namespace majestic_player.infrastructure.Models
         {
             _mediaPlayer?.Dispose();
             _libVLC?.Dispose();
+        }
+
+        private void MediaPlayer_EndReached(object? sender, EventArgs e)
+        {
+            EndReached?.Invoke();
         }
     }
 }
