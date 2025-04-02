@@ -26,9 +26,9 @@
             <StackPanel Spacing="10"
                         VerticalAlignment="Center">
                 <!-- Название трека -->
-                <!-- <TextBlock Text="Binding CurrentTrack.Title"
+                <TextBlock Text="{Binding CurrentTrack.Title}"  
                            Foreground="White"
-                           FontSize="16"/> -->
+                           FontSize="16"/>
                 
                 <!-- Прогресс-бар -->
                 <!-- <Slider Minimum="0" 

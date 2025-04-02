@@ -3,10 +3,22 @@ using majestic_player.core.Models;
 using TagLib;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using majestic_player.infrastructure.Services;
+using DynamicData;
 
 public class FileHandlerService
 {
+    private readonly LibraryService _libraryService;
+
     private static readonly string[] SupportedExtensions = { ".mp3", ".flac", ".wav", ".ogg" };
+
+    private readonly SourceList<string> _folders = new SourceList<string>();
+    public IObservable<IChangeSet<string>> Folders => _folders.Connect();
+
+    public FileHandlerService(LibraryService libraryService)
+    {
+        _libraryService = libraryService;
+    }
 
     public IEnumerable<string> GetAudioFiles(string folderPath)
     {
@@ -37,6 +49,20 @@ public class FileHandlerService
             Console.WriteLine("EXCETPTION:", e);
             return new Track { Title = Path.GetFileName(filePath), Source = filePath, Hash = "Unknown" };
         }
+    }
+
+    public async Task ScanFolderForAudio(string folderPath)
+    {
+        foreach (var file in GetAudioFiles(folderPath))
+        {
+            var track = GetTrackMetadata(file);
+            await _libraryService?.AddTrackAsync(track);
+        }
+    }
+
+    public void AddFolder(string folderPath)
+    {
+        _folders.Add(folderPath);
     }
 
     private string ComputeFileHash(string filePath)

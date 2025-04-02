@@ -1,3 +1,4 @@
+using DynamicData;
 using majestic_player.core.Models;
 using majestic_player.infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +9,20 @@ namespace majestic_player.infrastructure.Services
     {
         private readonly AppDBContext _context;
 
+        private readonly SourceCache<Track, Guid> _tracksCache = new(x => x.Id);
+        public IObservable<IChangeSet<Track, Guid>> Tracks => _tracksCache.Connect();
+
         public LibraryService(AppDBContext context)
         {
             _context = context;
+
+            LoadTracksAsync();
+        }
+
+        public async Task LoadTracksAsync()
+        {
+            var tracks = await GetAllTracksAsync();
+            _tracksCache.Edit(updater => updater.AddOrUpdate(tracks));
         }
 
         public async Task<List<Track>> GetAllTracksAsync()
