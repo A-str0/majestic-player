@@ -42,6 +42,9 @@ namespace majestic_player.infrastructure.Services
             _context.Tracks.Add(track);
             await _context.SaveChangesAsync();
             Console.WriteLine($"Track {track.Title} added");
+
+            // TODO: пересмотреть
+            LoadTracksAsync();
         }
 
         public async Task<bool> IsTrackExists(string? hash)

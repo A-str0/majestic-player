@@ -33,11 +33,11 @@ public partial class MainWindowViewModel : ReactiveObject
     public ReadOnlyObservableCollection<Track> AllTracks => _allTracks;
     private ReadOnlyObservableCollection<string> _mediaFolders;
     public ReadOnlyObservableCollection<string> MediaFolders => _mediaFolders;
-    private Track CurrentTrack => _playbackQueueService.CurrentTrack;
+    private Track? CurrentTrack => _playbackQueueService?.CurrentTrack;
 
     #region Commands
     public ReactiveCommand<Unit, Unit> AddFolderCommand { get; private set; }
-    public ReactiveCommand<Track, Unit> PlayTrackCommand { get; private set; }
+    public ReactiveCommand<Track?, Unit> PlayTrackCommand { get; private set; }
     public ICommand PlayPauseCommand { get; private set; }
     public ICommand NextCommand { get; private set; }
     public ICommand PreviousCommand { get; private set; }
@@ -49,7 +49,7 @@ public partial class MainWindowViewModel : ReactiveObject
 
         // Setup Commands
         AddFolderCommand = ReactiveCommand.CreateFromTask(AddFolderDialog);
-        PlayTrackCommand = ReactiveCommand.CreateFromTask<Track>(PlayTrack);
+        PlayTrackCommand = ReactiveCommand.CreateFromTask<Track?>(PlayTrack);
 
         PlayPauseCommand = ReactiveCommand.Create(PlayPause);
         NextCommand = ReactiveCommand.Create(PlayNextTrackInQueue);
@@ -70,20 +70,20 @@ public partial class MainWindowViewModel : ReactiveObject
         LoadTracks();
     }
 
-    private async Task LoadFolders()
+    private async Task? LoadFolders()
     {
         Console.WriteLine("Loading folders...");
 
-        _mediaHandlerService.Folders
+        _mediaHandlerService?.Folders
             .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _mediaFolders)
-            .Do(_ => UpdateTracksAsync().GetAwaiter().GetResult())
+            .Do(_ => UpdateTracksAsync()?.GetAwaiter().GetResult())
             .Subscribe();
 
         Console.WriteLine("Folders loaded");
     }
 
-    private async Task LoadTracks()
+    private async Task? LoadTracks()
     {
         Console.WriteLine("Loading tracks...");
 
@@ -97,7 +97,7 @@ public partial class MainWindowViewModel : ReactiveObject
         Console.WriteLine("Tracks loaded");
     }
 
-    public async Task PlayTrack(Track track)
+    public async Task? PlayTrack(Track track)
     {
         if (_playbackQueueService?.Queue.Count() == 0)
         {
@@ -107,23 +107,23 @@ public partial class MainWindowViewModel : ReactiveObject
         await _audioService?.PlayAsync(track);
     }
     
-    public async Task PlayPause() =>  _audioService?.PlayPause();
-    public async Task PlayNextTrackInQueue()
+    public async Task? PlayPause() =>  _audioService?.PlayPause();
+    public async Task? PlayNextTrackInQueue()
     {
-        Track nextTrack = _playbackQueueService?.ToNextTrackInQueue();
+        Track? nextTrack = _playbackQueueService?.ToNextTrackInQueue();
         await _audioService?.PlayAsync(nextTrack);
     }
     
-    public async Task PlayPreviousTrackInQueue()
+    public async Task? PlayPreviousTrackInQueue()
     {
-        Track prevTrack = _playbackQueueService?.ToPreviousTrackInQueue();
+        Track? prevTrack = _playbackQueueService?.ToPreviousTrackInQueue();
         await _audioService?.PlayAsync(prevTrack);
     }
 
-    private async Task UpdateTracksAsync()
+    private async Task? UpdateTracksAsync()
     {
         Console.WriteLine("Updating tracks due to folder change...");
-        await _libraryService.LoadTracksAsync();
+        await _libraryService?.LoadTracksAsync();
         Console.WriteLine("Tracks updated");
     }
 
