@@ -1,11 +1,12 @@
 using DynamicData;
+using majestic_player.core.Interfaces;
 using majestic_player.core.Models;
 using majestic_player.infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace majestic_player.infrastructure.Services
 {
-    public class LibraryService
+    public class LibraryService : ILibraryService
     {
         private readonly AppDBContext _context;
 

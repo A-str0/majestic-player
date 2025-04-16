@@ -1,21 +1,19 @@
-using System.IO;
 using majestic_player.core.Models;
-using TagLib;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using majestic_player.infrastructure.Services;
 using DynamicData;
+using majestic_player.core.Interfaces;
 
-public class FileHandlerService
+public class MediaHandlerService : IMediaHandlerService
 {
     private readonly LibraryService _libraryService;
 
     private static readonly string[] SupportedExtensions = { ".mp3", ".flac", ".wav", ".ogg" };
 
     private readonly SourceList<string> _folders = new SourceList<string>();
-    public IObservable<IChangeSet<string>> Folders => _folders.Connect();
-
-    public FileHandlerService(LibraryService libraryService)
+    public IObservable<IChangeSet<string>> Folders { get => _folders.Connect(); }
+ 
+    public MediaHandlerService(LibraryService libraryService)
     {
         _libraryService = libraryService;
     }
@@ -39,7 +37,7 @@ public class FileHandlerService
                 Artist = file.Tag.FirstPerformer ?? "ADAPTIVEREADING",
                 Album = file.Tag.Album,
                 Duration = file.Properties.Duration,
-                Year = (UInt16)file.Tag.Year,
+                Year = (ushort)file.Tag.Year,
                 Source = filePath
             };
         }
@@ -62,10 +60,11 @@ public class FileHandlerService
 
     public void AddFolder(string folderPath)
     {
+        Console.WriteLine($"Adding folder: {folderPath}");
         _folders.Add(folderPath);
     }
 
-    private string ComputeFileHash(string filePath)
+    public string ComputeFileHash(string filePath)
     {
         using SHA256 sha256 = SHA256.Create();
         using FileStream stream = System.IO.File.OpenRead(filePath);

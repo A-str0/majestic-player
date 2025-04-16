@@ -4,7 +4,7 @@ using majestic_player.core.Models;
 
 namespace majestic_player.infrastructure.Models
 {
-    public class AudioPlayer : IAudioService, IDisposable
+    public class AudioService : IAudioService, IDisposable
     {
         private LibVLC _libVLC;
         private MediaPlayer _mediaPlayer;
@@ -14,7 +14,7 @@ namespace majestic_player.infrastructure.Models
         public event Action<Track>? TrackChanged;
         public event Action? EndReached;
 
-        public AudioPlayer()
+        public AudioService()
         {
             Core.Initialize();
             

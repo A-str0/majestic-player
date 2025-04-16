@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using majestic_player.infrastructure.Models;
 using majestic_player.infrastructure.Services;
 using Avalonia.Platform.Storage;
+using majestic_player.core.Interfaces;
 
 namespace majestic_player.ui;
 
@@ -31,9 +32,9 @@ sealed class Program
         
         services.AddDbContext<AppDBContext>();
         
-        services.AddSingleton<AudioPlayer>();
+        services.AddSingleton<IAudioService, AudioService>();
         services.AddSingleton<LibraryService>();
-        services.AddSingleton<FileHandlerService>();
+        services.AddSingleton<IMediaHandlerService, MediaHandlerService>();
         services.AddSingleton<PlaybackQueueService>();
         
         Services = services.BuildServiceProvider();

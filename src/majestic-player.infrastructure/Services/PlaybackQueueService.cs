@@ -1,28 +1,29 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using majestic_player.core.Interfaces;
 using majestic_player.core.Models;
 using majestic_player.infrastructure.Models;
 
 
 namespace majestic_player.infrastructure.Services
 {
-    public class PlaybackQueueService
+    public class PlaybackQueueService : IPlaybackQueueService
     {
-        private readonly AudioPlayer _audioPlayer;
+        private readonly IAudioService _audioPlayer;
         private int _currentIndex = -1;
 
         private readonly ObservableCollection<Track> _queue = new();
         public IEnumerable<Track> Queue => _queue;
 
-        public Action? QueueChanged;
+        public event Action? QueueChanged;
 
         public Track? CurrentTrack 
         { 
             get => _currentIndex >= 0 ? _queue[_currentIndex] : null;
-            set => _queue[_currentIndex] = value;
+            set => _queue[_currentIndex] = value??throw new NullReferenceException("Track is null");
         }
 
-        public PlaybackQueueService(AudioPlayer audioPlayer)
+        public PlaybackQueueService(IAudioService audioPlayer)
         {
             _audioPlayer = audioPlayer;
 
