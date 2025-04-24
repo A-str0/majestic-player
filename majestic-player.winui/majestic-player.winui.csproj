@@ -39,6 +39,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250401001" />
+    <PackageReference Include="ReactiveUI" Version="20.1.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\majestic-player.core\majestic-player.core.csproj" />
