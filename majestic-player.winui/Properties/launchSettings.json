@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "majestic-player.winui (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "majestic-player.winui (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
