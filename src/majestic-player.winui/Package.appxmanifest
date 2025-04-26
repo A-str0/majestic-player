@@ -8,11 +8,11 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="210a28ae-b980-4a1d-8d5f-29b3d5336427"
+    Name="966e2b9c-c9d5-45a4-b96e-c198d809f1f6"
     Publisher="CN=magesty_"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="210a28ae-b980-4a1d-8d5f-29b3d5336427" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="966e2b9c-c9d5-45a4-b96e-c198d809f1f6" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>majestic-player.winui</DisplayName>

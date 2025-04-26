@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using majestic_player.core.Interfaces;
+using majestic_player.infrastructure.Models;
+using majestic_player.infrastructure.Services;
+using majestic_player.winui.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -26,6 +31,8 @@ namespace majestic_player.winui
     /// </summary>
     public partial class App : Application
     {
+        public static Window? CurrentWindow => (Current as App)?.m_window;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -35,14 +42,38 @@ namespace majestic_player.winui
             this.InitializeComponent();
         }
 
+        public static ServiceProvider? Services { get; private set; }
+
         /// <summary>
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
+            ConfigureServices();
+
+            m_window = new MainWindow
+            {
+                ViewModel = new MainWindowViewModel(),
+            };
             m_window.Activate();
+        }
+
+        /// <summary>
+        /// Method for configuring DI services singletons
+        /// </summary>
+        public static void ConfigureServices()
+        {
+            var services = new ServiceCollection();
+
+            services.AddDbContext<AppDBContext>();
+
+            services.AddSingleton<IAudioService, AudioService>();
+            services.AddSingleton<LibraryService>();
+            services.AddSingleton<IMediaHandlerService, MediaHandlerService>();
+            services.AddSingleton<PlaybackQueueService>();
+
+            Services = services.BuildServiceProvider();
         }
 
         private Window? m_window;
