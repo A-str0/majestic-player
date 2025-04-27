@@ -50,7 +50,7 @@ public class MediaHandlerService : IMediaHandlerService
         }
     }
 
-    public async Task ScanFolderForAudio(string folderPath)
+    public async Task ScanFolderForAudioAsync(string folderPath)
     {
         Debug.WriteLine($"Scaning {folderPath} for audio files");
 
@@ -63,7 +63,7 @@ public class MediaHandlerService : IMediaHandlerService
         await _libraryService?.AddTracksAsync(tracks);
     }
 
-    public async Task AddFolder(string folderPath)
+    public async Task AddFolderAsync(string folderPath)
     {
         Console.WriteLine($"Adding folder: {folderPath}");
         _folders.Add(folderPath);

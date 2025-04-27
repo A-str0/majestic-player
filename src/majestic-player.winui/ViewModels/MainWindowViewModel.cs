@@ -143,8 +143,8 @@ public partial class MainWindowViewModel : ReactiveObject
             string path = folder.Path;
             if (!string.IsNullOrEmpty(path))
             {
-                await _mediaHandlerService?.AddFolder(path);
-                await _mediaHandlerService?.ScanFolderForAudio(path);
+                await _mediaHandlerService?.AddFolderAsync(path);
+                await _mediaHandlerService?.ScanFolderForAudioAsync(path);
             }
         }
     }
