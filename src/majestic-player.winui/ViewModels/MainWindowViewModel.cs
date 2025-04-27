@@ -17,6 +17,7 @@ using DynamicData;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 using System.Windows;
+using System.Diagnostics;
 
 namespace majestic_player.winui.ViewModels;
 
@@ -73,12 +74,6 @@ public partial class MainWindowViewModel : ReactiveObject
     {
         Console.WriteLine("Loading folders...");
 
-        _mediaHandlerService?.Folders
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Bind(out _mediaFolders)
-            .Do(_ => UpdateTracksAsync()?.GetAwaiter().GetResult())
-            .Subscribe();
-
         Console.WriteLine("Folders loaded");
     }
 
@@ -91,6 +86,7 @@ public partial class MainWindowViewModel : ReactiveObject
         _libraryService?.Tracks
             .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _allTracks)
+            //.Do(_ => UpdateTracksAsync()?.GetAwaiter().GetResult())
             .Subscribe();
 
         Console.WriteLine("Tracks loaded");
@@ -98,26 +94,33 @@ public partial class MainWindowViewModel : ReactiveObject
 
     public async Task? PlayTrack(Track track)
     {
+        Debug.WriteLine($"Track {track.Title} is playing");
+
         if (_playbackQueueService?.Queue.Count() == 0)
         {
+            Debug.WriteLine($"Queue was created");
+
             _playbackQueueService.CreateQueue(track, AllTracks);
         }
 
         await _audioService?.PlayAsync(track);
     }
 
-    public async Task? PlayPause() => _audioService?.PlayPause();
+    public void PlayPause() => _audioService?.PlayPause();
 
-    public async Task? PlayNextTrackInQueue()
+    public void PlayNextTrackInQueue()
     {
         Track? nextTrack = _playbackQueueService?.ToNextTrackInQueue();
-        await _audioService?.PlayAsync(nextTrack);
+
+        Debug.WriteLine($"Playing next track in queue: {nextTrack?.Title}");
+
+        _audioService?.PlayAsync(nextTrack);
     }
 
-    public async Task? PlayPreviousTrackInQueue()
+    public void PlayPreviousTrackInQueue()
     {
         Track? prevTrack = _playbackQueueService?.ToPreviousTrackInQueue();
-        await _audioService?.PlayAsync(prevTrack);
+        _audioService?.PlayAsync(prevTrack);
     }
 
     public async Task AddFolderDialogAsync()
@@ -135,13 +138,12 @@ public partial class MainWindowViewModel : ReactiveObject
 
         var folder = await folderPicker.PickSingleFolderAsync();
 
-
         if (folder != null)
         {
             string path = folder.Path;
             if (!string.IsNullOrEmpty(path))
             {
-                _mediaHandlerService?.AddFolder(path);
+                await _mediaHandlerService?.AddFolder(path);
                 await _mediaHandlerService?.ScanFolderForAudio(path);
             }
         }

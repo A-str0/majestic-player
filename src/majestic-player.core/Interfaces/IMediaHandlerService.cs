@@ -13,7 +13,7 @@ namespace majestic_player.core.Interfaces
         public Task ScanFolderForAudio(string folderPath);
         protected string ComputeFileHash(string filePath);
 
-        public void AddFolder(string folderPath);
+        public Task AddFolder(string folderPath);
         public IObservable<IChangeSet<string>> Folders { get; }
     }
 }

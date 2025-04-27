@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using majestic_player.infrastructure.Services;
 using DynamicData;
 using majestic_player.core.Interfaces;
+using System.Diagnostics;
 
 public class MediaHandlerService : IMediaHandlerService
 {
@@ -11,7 +12,7 @@ public class MediaHandlerService : IMediaHandlerService
     private static readonly string[] SupportedExtensions = { ".mp3", ".flac", ".wav", ".ogg" };
 
     private readonly SourceList<string> _folders = new SourceList<string>();
-    public IObservable<IChangeSet<string>> Folders { get => _folders.Connect(); }
+    public IObservable<IChangeSet<string>> Folders { get => _folders.Connect(); } // TODO: setting save
  
     public MediaHandlerService(LibraryService libraryService)
     {
@@ -51,14 +52,18 @@ public class MediaHandlerService : IMediaHandlerService
 
     public async Task ScanFolderForAudio(string folderPath)
     {
+        Debug.WriteLine($"Scaning {folderPath} for audio files");
+
+        IEnumerable<Track> tracks = new List<Track>();
         foreach (var file in GetAudioFiles(folderPath))
         {
             var track = GetTrackMetadata(file);
-            await _libraryService?.AddTrackAsync(track);
+            tracks.Append(track);
         }
+        await _libraryService?.AddTracksAsync(tracks);
     }
 
-    public void AddFolder(string folderPath)
+    public async Task AddFolder(string folderPath)
     {
         Console.WriteLine($"Adding folder: {folderPath}");
         _folders.Add(folderPath);

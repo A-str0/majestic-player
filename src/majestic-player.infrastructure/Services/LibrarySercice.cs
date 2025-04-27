@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DynamicData;
 using majestic_player.core.Interfaces;
 using majestic_player.core.Models;
@@ -31,9 +32,27 @@ namespace majestic_player.infrastructure.Services
             return await _context.Tracks.ToListAsync();
         }
 
+        public async Task AddTracksAsync(IEnumerable<Track> tracks)
+        {
+            foreach (var track in tracks)
+            {
+                if (await IsTrackExists(track.Hash))
+                {
+                    Debug.WriteLine($"Track {track.Hash} is already in DB");
+                    continue;
+                }
+
+                _context.Tracks.Add(track);
+                Debug.WriteLine($"Track {track.Title} added");
+            }
+
+            await _context.SaveChangesAsync();
+            await LoadTracksAsync();
+        }
+
         public async Task AddTrackAsync(Track track)
         {
-            if (_context.Tracks.Any(t => track.Hash == t.Hash))
+            if (await IsTrackExists(track.Hash))
             {
                 Console.WriteLine($"Track {track.Hash} is already in DB");
                 return;
@@ -43,8 +62,7 @@ namespace majestic_player.infrastructure.Services
             await _context.SaveChangesAsync();
             Console.WriteLine($"Track {track.Title} added");
 
-            // TODO: пересмотреть
-            LoadTracksAsync();
+            await LoadTracksAsync();
         }
 
         public async Task<bool> IsTrackExists(string? hash)

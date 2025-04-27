@@ -54,7 +54,7 @@ namespace majestic_player.winui
 
             m_window = new MainWindow
             {
-                ViewModel = new MainWindowViewModel(),
+                DataContext = new MainWindowViewModel(),
             };
             m_window.Activate();
         }

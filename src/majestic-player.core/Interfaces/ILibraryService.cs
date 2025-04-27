@@ -10,6 +10,7 @@ namespace majestic_player.core.Interfaces
     {
         public Task LoadTracksAsync();
         public Task<List<Track>> GetAllTracksAsync();
+        public Task AddTracksAsync(IEnumerable<Track> tracks);
         public Task AddTrackAsync(Track track);
         public Task<bool> IsTrackExists(string? hash);
 

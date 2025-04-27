@@ -29,6 +29,6 @@ namespace majestic_player.winui
             this.InitializeComponent();
         }
 
-        public MainWindowViewModel ViewModel { get; set; } = new();
+        public MainWindowViewModel DataContext { get; set; } = new();
     }
 }
