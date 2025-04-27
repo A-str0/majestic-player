@@ -21,7 +21,7 @@ namespace majestic_player.infrastructure.Services
             LoadTracksAsync();
         }
 
-        public async Task LoadTracksAsync()
+        public async Task? LoadTracksAsync()
         {
             var tracks = await GetAllTracksAsync();
             _tracksCache.Edit(updater => updater.AddOrUpdate(tracks));

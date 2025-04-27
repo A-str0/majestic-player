@@ -70,23 +70,23 @@ public partial class MainWindowViewModel : ReactiveObject
         LoadTracks();
     }
 
-    private async Task? LoadFolders()
+    private async void LoadFolders()
     {
         Console.WriteLine("Loading folders...");
 
         Console.WriteLine("Folders loaded");
     }
 
-    private async Task? LoadTracks()
+    private async void LoadTracks()
     {
         Console.WriteLine("Loading tracks...");
 
-        await _libraryService?.LoadTracksAsync();
+        _libraryService?.LoadTracksAsync();
 
         _libraryService?.Tracks
             .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _allTracks)
-            //.Do(_ => UpdateTracksAsync()?.GetAwaiter().GetResult())
+            .Do(_ => UpdateTracksAsync()?.GetAwaiter().GetResult())
             .Subscribe();
 
         Console.WriteLine("Tracks loaded");
@@ -152,7 +152,7 @@ public partial class MainWindowViewModel : ReactiveObject
     private async Task? UpdateTracksAsync()
     {
         Console.WriteLine("Updating tracks due to folder change...");
-        await _libraryService?.LoadTracksAsync();
+        _libraryService?.LoadTracksAsync();
         Console.WriteLine("Tracks updated");
     }
 }
