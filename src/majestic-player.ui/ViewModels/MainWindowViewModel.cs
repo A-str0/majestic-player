@@ -139,7 +139,7 @@ public partial class MainWindowViewModel : ReactiveObject
         {
             if (folder.TryGetLocalPath() is { } path)
             {
-                _mediaHandlerService?.AddFolderAsync(path);
+                _mediaHandlerService?.AddFolder(path);
                 await _mediaHandlerService?.ScanFolderForAudioAsync(path);
             }
         }
