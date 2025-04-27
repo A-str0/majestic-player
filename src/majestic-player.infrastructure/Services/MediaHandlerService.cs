@@ -12,41 +12,48 @@ public class MediaHandlerService : IMediaHandlerService
     private static readonly string[] SupportedExtensions = { ".mp3", ".flac", ".wav", ".ogg" };
 
     private readonly SourceList<string> _folders = new SourceList<string>();
-    public IObservable<IChangeSet<string>> Folders { get => _folders.Connect(); } // TODO: setting save
+    public IObservable<IChangeSet<string>> Folders { get => _folders.Connect(); } // TODO: setting saving
  
     public MediaHandlerService(LibraryService libraryService)
     {
         _libraryService = libraryService;
     }
 
-    public IEnumerable<string> GetAudioFiles(string folderPath)
+    public async Task<IEnumerable<string>> GetAudioFilesAsync(string folderPath)
     {
         return Directory.EnumerateFiles(folderPath, "*.*", SearchOption.AllDirectories)
             .Where(file => SupportedExtensions.Contains(Path.GetExtension(file).ToLower()));
     }
 
-    public Track GetTrackMetadata(string filePath)
+    public async Task<Track> GetTrackMetadataAsync(string filePath)
     {
         try
         {
-            using TagLib.File file = TagLib.File.Create(filePath);
+            string trackHash = await ComputeFileHashAsync(filePath);
 
-            return new Track
+            return await Task.Run(() =>
             {
-                Hash = ComputeFileHash(filePath),
-                Title = file.Tag.Title ?? Path.GetFileNameWithoutExtension(filePath),
-                Artist = file.Tag.FirstPerformer ?? "ADAPTIVEREADING",
-                Album = file.Tag.Album,
-                Duration = file.Properties.Duration,
-                Year = (ushort)file.Tag.Year,
-                Source = filePath
-            };
+                using TagLib.File file = TagLib.File.Create(filePath);
+
+                return new Track
+                {
+                    Hash = trackHash,
+                    Title = file.Tag.Title ?? Path.GetFileNameWithoutExtension(filePath),
+                    Artist = file.Tag.FirstPerformer ?? "ADAPTIVEREADING",
+                    Album = file.Tag.Album,
+                    Duration = file.Properties.Duration,
+                    Year = (ushort)file.Tag.Year,
+                    Source = filePath
+                };
+            });
         }
         catch (Exception e)
         {
-            // TODO: logging
-            Console.WriteLine("EXCETPTION:", e);
-            return new Track { Title = Path.GetFileName(filePath), Source = filePath, Hash = "Unknown" };
+            Debug.WriteLine(e);
+            return await Task.Run(() =>
+            {
+                return new Track { Title = Path.GetFileName(filePath), Source = filePath, Hash = "Unknown" };
+            });
         }
     }
 
@@ -55,25 +62,28 @@ public class MediaHandlerService : IMediaHandlerService
         Debug.WriteLine($"Scaning {folderPath} for audio files");
 
         IEnumerable<Track> tracks = new List<Track>();
-        foreach (var file in GetAudioFiles(folderPath))
+        foreach (var file in await GetAudioFilesAsync(folderPath))
         {
-            var track = GetTrackMetadata(file);
+            var track = await GetTrackMetadataAsync(file);
             tracks.Append(track);
         }
-        await _libraryService?.AddTracksAsync(tracks);
+        await _libraryService.AddTracksAsync(tracks);
     }
 
-    public async Task AddFolderAsync(string folderPath)
+    public void AddFolder(string folderPath)
     {
-        Console.WriteLine($"Adding folder: {folderPath}");
+        Debug.WriteLine($"Adding folder: {folderPath}");
         _folders.Add(folderPath);
     }
 
-    public string ComputeFileHash(string filePath)
+    public async Task<string> ComputeFileHashAsync(string filePath)
     {
-        using SHA256 sha256 = SHA256.Create();
-        using FileStream stream = System.IO.File.OpenRead(filePath);
-        byte[] hashBytes = sha256.ComputeHash(stream);
-        return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        return await Task.Run(() =>
+        {
+            using SHA256 sha256 = SHA256.Create();
+            using FileStream stream = System.IO.File.OpenRead(filePath);
+            byte[] hashBytes = sha256.ComputeHash(stream);
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        });
     }
 }
