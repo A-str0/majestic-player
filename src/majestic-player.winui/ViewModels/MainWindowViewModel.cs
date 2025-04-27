@@ -66,34 +66,46 @@ public partial class MainWindowViewModel : ReactiveObject
         _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
 
         // Setup observers
-        LoadFolders();
-        LoadTracks();
+        Task.Run(async () =>
+        {
+            await LoadFoldersAsync();
+            await LoadTracksAsync();
+        });
     }
 
-    private async void LoadFolders()
+    private async Task LoadFoldersAsync()
     {
         Console.WriteLine("Loading folders...");
+
+        _mediaHandlerService?.Folders
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out _mediaFolders)
+            .Do(async _ => await UpdateTracksAsync())
+            .Subscribe();
 
         Console.WriteLine("Folders loaded");
     }
 
-    private async void LoadTracks()
+    private async Task LoadTracksAsync()
     {
         Console.WriteLine("Loading tracks...");
-
-        _libraryService?.LoadTracksAsync();
 
         _libraryService?.Tracks
             .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _allTracks)
-            .Do(_ => UpdateTracksAsync()?.GetAwaiter().GetResult())
             .Subscribe();
 
         Console.WriteLine("Tracks loaded");
     }
 
-    public async Task? PlayTrack(Track track)
+    public async Task PlayTrack(Track? track)
     {
+        if (track == null)
+        {
+            Debug.WriteLine("Track is null");
+            return;
+        }
+
         Debug.WriteLine($"Track {track.Title} is playing");
 
         if (_playbackQueueService?.Queue.Count() == 0)
@@ -108,19 +120,32 @@ public partial class MainWindowViewModel : ReactiveObject
 
     public void PlayPause() => _audioService?.PlayPause();
 
-    public void PlayNextTrackInQueue()
+    public async Task PlayNextTrackInQueue()
     {
         Track? nextTrack = _playbackQueueService?.ToNextTrackInQueue();
 
+        if (nextTrack == null)
+        {
+            Debug.WriteLine("The next track in queue is null");
+            return;
+        }
+
         Debug.WriteLine($"Playing next track in queue: {nextTrack?.Title}");
 
-        _audioService?.PlayAsync(nextTrack);
+        await _audioService?.PlayAsync(nextTrack);
     }
 
-    public void PlayPreviousTrackInQueue()
+    public async Task PlayPreviousTrackInQueue()
     {
         Track? prevTrack = _playbackQueueService?.ToPreviousTrackInQueue();
-        _audioService?.PlayAsync(prevTrack);
+
+        if (prevTrack == null)
+        {
+            Debug.WriteLine("The previous track in queue is null");
+            return;
+        }
+
+        await _audioService?.PlayAsync(prevTrack);
     }
 
     public async Task AddFolderDialogAsync()
@@ -143,16 +168,17 @@ public partial class MainWindowViewModel : ReactiveObject
             string path = folder.Path;
             if (!string.IsNullOrEmpty(path))
             {
-                await _mediaHandlerService?.AddFolderAsync(path);
+                _mediaHandlerService?.AddFolder(path);
+
                 await _mediaHandlerService?.ScanFolderForAudioAsync(path);
             }
         }
     }
 
-    private async Task? UpdateTracksAsync()
+    private async Task UpdateTracksAsync()
     {
-        Console.WriteLine("Updating tracks due to folder change...");
-        _libraryService?.LoadTracksAsync();
-        Console.WriteLine("Tracks updated");
+        Debug.WriteLine("Updating tracks due to folder change...");
+        await _libraryService?.LoadTracksAsync();
+        Debug.WriteLine("Tracks updated");
     }
 }

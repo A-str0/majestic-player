@@ -49,6 +49,7 @@ public class MediaHandlerService : IMediaHandlerService
         }
         catch (Exception e)
         {
+            // TODO: Make unique Hash for tracks like this
             Debug.WriteLine(e);
             return await Task.Run(() =>
             {
@@ -61,12 +62,16 @@ public class MediaHandlerService : IMediaHandlerService
     {
         Debug.WriteLine($"Scaning {folderPath} for audio files");
 
-        IEnumerable<Track> tracks = new List<Track>();
+        List<Track> tracks = new List<Track>();
         foreach (var file in await GetAudioFilesAsync(folderPath))
         {
-            var track = await GetTrackMetadataAsync(file);
-            tracks.Append(track);
+            Track track = await GetTrackMetadataAsync(file);
+
+            tracks.Add(track);
         }
+
+        Debug.WriteLine($"Tracks count: {tracks.Count()}");
+
         await _libraryService.AddTracksAsync(tracks);
     }
 

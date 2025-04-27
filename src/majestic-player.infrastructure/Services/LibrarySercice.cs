@@ -9,31 +9,47 @@ namespace majestic_player.infrastructure.Services
 {
     public class LibraryService : ILibraryService
     {
-        private readonly AppDBContext _context;
+        private IDbContextFactory<AppDBContext> _contextFactory;
 
         private readonly SourceCache<Track, Guid> _tracksCache = new(x => x.Id);
         public IObservable<IChangeSet<Track, Guid>> Tracks => _tracksCache.Connect();
 
-        public LibraryService(AppDBContext context)
+        public LibraryService(IDbContextFactory<AppDBContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
 
             LoadTracksAsync();
         }
 
         public async Task LoadTracksAsync()
         {
+            Debug.WriteLine("Loading tracks");
+
             var tracks = await GetAllTracksAsync();
+
+            foreach (var track in tracks)
+            {
+                Debug.WriteLine($"{track.Title} is in tracks");
+            }
+
             _tracksCache.Edit(updater => updater.AddOrUpdate(tracks));
         }
 
         public async Task<List<Track>> GetAllTracksAsync()
         {
-            return await _context.Tracks.ToListAsync();
+            Debug.WriteLine("Returning all tracks");
+
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                return await context.Tracks.ToListAsync();
+            }
         }
 
         public async Task AddTracksAsync(IEnumerable<Track> tracks)
         {
+            Debug.WriteLine($"Tracks count: {tracks.Count()}");
+
+            using var context = _contextFactory.CreateDbContext();
             foreach (var track in tracks)
             {
                 if (await IsTrackExists(track.Hash))
@@ -42,32 +58,39 @@ namespace majestic_player.infrastructure.Services
                     continue;
                 }
 
-                _context.Tracks.Add(track);
+                context.Tracks.Add(track);
                 Debug.WriteLine($"Track {track.Title} added");
             }
 
-            await _context.SaveChangesAsync();
+            var result = await context.SaveChangesAsync();
+            Debug.WriteLine($"Saved {result} tracks to the database.");
             await LoadTracksAsync();
         }
 
         public async Task AddTrackAsync(Track track)
         {
+            using var context = _contextFactory.CreateDbContext();
             if (await IsTrackExists(track.Hash))
             {
                 Console.WriteLine($"Track {track.Hash} is already in DB");
                 return;
             }
 
-            _context.Tracks.Add(track);
-            await _context.SaveChangesAsync();
+            context.Tracks.Add(track);
             Console.WriteLine($"Track {track.Title} added");
 
+            var result = await context.SaveChangesAsync();
+            Debug.WriteLine($"Saved {result} tracks to the database.");
             await LoadTracksAsync();
+
         }
 
         public async Task<bool> IsTrackExists(string? hash)
         {
-            return await _context.Tracks.AnyAsync(t => t.Hash == hash);
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                return await context.Tracks.AnyAsync(t => t.Hash == hash);
+            }
         }
     }
 }

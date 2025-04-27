@@ -66,7 +66,7 @@ namespace majestic_player.winui
         {
             var services = new ServiceCollection();
 
-            services.AddDbContext<AppDBContext>();
+            services.AddDbContextFactory<AppDBContext>();
 
             services.AddSingleton<IAudioService, AudioService>();
             services.AddSingleton<LibraryService>();
