@@ -12,6 +12,8 @@ namespace majestic_player.core.Models
         private string _album = String.Empty;
         private TimeSpan _duration = TimeSpan.FromSeconds(0);
         private UInt16 _year = 0;
+        private string? _source = String.Empty;
+        private SourceType _sourceType;
 
         public Guid Id 
         { 
@@ -49,7 +51,16 @@ namespace majestic_player.core.Models
             set => SetProperty(ref _year, value??0);
         }
 
-        public string? Source { get; set; } // directory path OR url
-        public SourceType SourceType { get; set; }
+        public string? Source 
+        { 
+            get => _source; 
+            set => SetProperty(ref _source, value); 
+        }
+
+        public SourceType SourceType 
+        { 
+            get => _sourceType; 
+            set => SetProperty(ref _sourceType, value); 
+        }
     }
 }
