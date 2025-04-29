@@ -18,31 +18,28 @@ namespace majestic_player.infrastructure.Services
         {
             _contextFactory = contextFactory;
 
-            LoadTracksAsync();
+            //Task.Run(async () => await LoadTracksAsync());
         }
 
+        /// <summary>
+        /// THIS METHOD MUST BE CALLED IN UI THREAD
+        /// Method for reloading all tracks from DB
+        /// </summary>
         public async Task LoadTracksAsync()
         {
             Debug.WriteLine("Loading tracks");
 
-            var tracks = await GetAllTracksAsync();
+            List<Track> tracks = await GetAllTracksAsync();
 
-            foreach (var track in tracks)
-            {
-                Debug.WriteLine($"{track.Title} is in tracks");
-            }
-
-            _tracksCache.Edit(updater => updater.AddOrUpdate(tracks));
+            _tracksCache.Edit(innerCache => innerCache.AddOrUpdate(tracks));
         }
 
         public async Task<List<Track>> GetAllTracksAsync()
         {
             Debug.WriteLine("Returning all tracks");
 
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                return await context.Tracks.ToListAsync();
-            }
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Tracks.ToListAsync();
         }
 
         public async Task AddTracksAsync(IEnumerable<Track> tracks)
@@ -64,7 +61,6 @@ namespace majestic_player.infrastructure.Services
 
             var result = await context.SaveChangesAsync();
             Debug.WriteLine($"Saved {result} tracks to the database.");
-            await LoadTracksAsync();
         }
 
         public async Task AddTrackAsync(Track track)
@@ -81,16 +77,12 @@ namespace majestic_player.infrastructure.Services
 
             var result = await context.SaveChangesAsync();
             Debug.WriteLine($"Saved {result} tracks to the database.");
-            await LoadTracksAsync();
-
         }
 
         public async Task<bool> IsTrackExists(string? hash)
         {
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                return await context.Tracks.AnyAsync(t => t.Hash == hash);
-            }
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Tracks.AnyAsync(t => t.Hash == hash);
         }
     }
 }

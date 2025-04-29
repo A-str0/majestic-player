@@ -25,36 +25,31 @@ public class MediaHandlerService : IMediaHandlerService
             .Where(file => SupportedExtensions.Contains(Path.GetExtension(file).ToLower()));
     }
 
-    public async Task<Track> GetTrackMetadataAsync(string filePath)
+    public Track GetTrackMetadata(string filePath)
     {
+        string trackHash = ComputeFileHash(filePath);
+
         try
         {
-            string trackHash = await ComputeFileHashAsync(filePath);
+            using TagLib.File file = TagLib.File.Create(filePath);
 
-            return await Task.Run(() =>
+            return new Track
             {
-                using TagLib.File file = TagLib.File.Create(filePath);
-
-                return new Track
-                {
-                    Hash = trackHash,
-                    Title = file.Tag.Title ?? Path.GetFileNameWithoutExtension(filePath),
-                    Artist = file.Tag.FirstPerformer ?? "ADAPTIVEREADING",
-                    Album = file.Tag.Album,
-                    Duration = file.Properties.Duration,
-                    Year = (ushort)file.Tag.Year,
-                    Source = filePath
-                };
-            });
+                Hash = trackHash,
+                Title = file.Tag.Title ?? Path.GetFileNameWithoutExtension(filePath),
+                Artist = file.Tag.FirstPerformer ?? "ADAPTIVEREADING",
+                Album = file.Tag.Album,
+                Duration = file.Properties.Duration,
+                Year = (ushort)file.Tag.Year,
+                Source = filePath
+            };
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             // TODO: Make unique Hash for tracks like this
-            Debug.WriteLine(e);
-            return await Task.Run(() =>
-            {
-                return new Track { Title = Path.GetFileName(filePath), Source = filePath, Hash = "Unknown" };
-            });
+            Debug.WriteLine(ex);
+
+            return new Track { Title = Path.GetFileName(filePath), Source = filePath, Hash = "Unknown" };
         }
     }
 
@@ -65,12 +60,10 @@ public class MediaHandlerService : IMediaHandlerService
         List<Track> tracks = new List<Track>();
         foreach (var file in await GetAudioFilesAsync(folderPath))
         {
-            Track track = await GetTrackMetadataAsync(file);
+            Track track = GetTrackMetadata(file);
 
             tracks.Add(track);
         }
-
-        Debug.WriteLine($"Tracks count: {tracks.Count()}");
 
         await _libraryService.AddTracksAsync(tracks);
     }
@@ -81,14 +74,11 @@ public class MediaHandlerService : IMediaHandlerService
         _folders.Add(folderPath);
     }
 
-    public async Task<string> ComputeFileHashAsync(string filePath)
+    public string ComputeFileHash(string filePath)
     {
-        return await Task.Run(() =>
-        {
-            using SHA256 sha256 = SHA256.Create();
-            using FileStream stream = System.IO.File.OpenRead(filePath);
-            byte[] hashBytes = sha256.ComputeHash(stream);
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-        });
+        using SHA256 sha256 = SHA256.Create();
+        using FileStream stream = System.IO.File.OpenRead(filePath);
+        byte[] hashBytes = sha256.ComputeHash(stream);
+        return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
     }
 }

@@ -42,7 +42,7 @@ namespace majestic_player.winui
             this.InitializeComponent();
         }
 
-        public static ServiceProvider? Services { get; private set; }
+        public static ServiceProvider Services { get; private set; }
 
         /// <summary>
         /// Invoked when the application is launched.

@@ -9,9 +9,9 @@ namespace majestic_player.core.Interfaces
     public interface IMediaHandlerService
     {
         public Task<IEnumerable<string>> GetAudioFilesAsync(string folderPath);
-        public Task<Track> GetTrackMetadataAsync(string filePath);
+        public Track GetTrackMetadata(string filePath);
         public Task ScanFolderForAudioAsync(string folderPath);
-        protected Task<string> ComputeFileHashAsync(string filePath);
+        protected string ComputeFileHash(string filePath);
 
         public void AddFolder(string folderPath);
         public IObservable<IChangeSet<string>> Folders { get; }
