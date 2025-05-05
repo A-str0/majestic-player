@@ -30,6 +30,7 @@ public partial class MainWindowViewModel : ReactiveObject
     private readonly IMediaHandlerService _mediaHandlerService;
     private readonly PlaybackQueueService _playbackQueueService;
     private readonly IAudioService _audioService;
+    private readonly TorrentSearchService _searchService;
     #endregion
 
     private ReadOnlyObservableCollection<Track> _allTracks;
@@ -68,6 +69,7 @@ public partial class MainWindowViewModel : ReactiveObject
         _libraryService = serviceProvider.GetRequiredService<LibraryService>();
         _mediaHandlerService = serviceProvider.GetRequiredService<IMediaHandlerService>();
         _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
+            _searchService = serviceProvider.GetRequiredService<TorrentSearchService>();
 
         // Setup observers
         LoadFolders();

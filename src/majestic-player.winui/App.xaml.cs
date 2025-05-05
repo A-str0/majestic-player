@@ -72,6 +72,7 @@ namespace majestic_player.winui
             services.AddSingleton<LibraryService>();
             services.AddSingleton<IMediaHandlerService, MediaHandlerService>();
             services.AddSingleton<PlaybackQueueService>();
+            services.AddSingleton<TorrentSearchService>();
 
             Services = services.BuildServiceProvider();
         }
