@@ -13,6 +13,6 @@ namespace majestic_player.core.Interfaces
     /// </summary>
     public interface ISearchService<T>
     {
-        public Task SearchAsync(string query, string category = "101");
+        public Task<List<T>> SearchAsync(string query, string category = "101");
     }
 }

@@ -7,8 +7,8 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.IO;
 using MonoTorrent.Client;
-using TagLib.Mpeg;
 using MonoTorrent;
+using MonoTorrent.Streaming;
 
 public class MediaHandlerService : IMediaHandlerService
 {
@@ -93,31 +93,36 @@ public class MediaHandlerService : IMediaHandlerService
     /// </summary>
     /// <param name="stream">Stream where file locates</param>
     /// <param name="filePath">Path to file in stream</param>
-    /// <param name="magnetLink"></param>
+    /// <param name="source"></param>
     /// <returns>Track object</returns>
-    public async Task<Track> GetTrackMetadataStream(Stream stream, string filePath, string magnetLink)
+    public async Task<Track> GetTrackMetadataStream(Stream stream, string filePath, string source)
     {
         try
         {
             using (stream)
             {
+                string trackHash = ComputeStreamHash(stream);
+
                 using var memoryStream = new MemoryStream();
                 await stream.CopyToAsync(memoryStream);
-                memoryStream.Position = 0;
+                memoryStream.Position = 0; 
 
-                string trackHash = ComputeStreamHash(memoryStream);
-
-                using var file = TagLib.File.Create(new StreamFileAbstraction(Path.GetFileName(filePath), memoryStream, memoryStream));
-                return new Track
+                Track track = await Task.Run(() =>
                 {
-                    Hash = trackHash,
-                    Title = file.Tag.Title ?? Path.GetFileNameWithoutExtension(filePath),
-                    Artist = file.Tag.FirstPerformer ?? "ADAPTIVEREADING",
-                    Album = file.Tag.Album,
-                    Duration = file.Properties.Duration,
-                    Year = (ushort)file.Tag.Year,
-                    Source = magnetLink
-                };
+                    using var file = TagLib.File.Create(new StreamFileAbstraction(Path.GetFileName(filePath), memoryStream, memoryStream));
+                    return new Track
+                    {
+                        Hash = trackHash,
+                        Title = file.Tag.Title ?? Path.GetFileNameWithoutExtension(filePath),
+                        Artist = file.Tag.FirstPerformer ?? "ADAPTIVEREADING",
+                        Album = file.Tag.Album,
+                        Duration = file.Properties.Duration,
+                        Year = (ushort)file.Tag.Year,
+                        Source = source
+                    };
+                });
+
+                return track;
             }
         }
         catch (Exception e)
@@ -126,7 +131,7 @@ public class MediaHandlerService : IMediaHandlerService
             return new Track
             {
                 Title = Path.GetFileName(filePath),
-                Source = magnetLink,
+                Source = source,
                 Hash = "Unknown"
             };
         }
@@ -181,6 +186,8 @@ public class MediaHandlerService : IMediaHandlerService
 
     public string ComputeStreamHash(Stream stream)
     {
+        return "sgdasfad";
+
         using SHA256 sha256 = SHA256.Create();
         byte[] hashBytes = sha256.ComputeHash(stream);
         return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();

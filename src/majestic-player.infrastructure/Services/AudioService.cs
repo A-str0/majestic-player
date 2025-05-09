@@ -1,14 +1,17 @@
+using System.Diagnostics;
+using System.IO;
+using System.Xml.Serialization;
 using LibVLCSharp.Shared;
 using majestic_player.core.Interfaces;
 using majestic_player.core.Models;
+using MonoTorrent;
 
 namespace majestic_player.infrastructure.Models
 {
     public class AudioService : IAudioService, IDisposable
     {
-        private LibVLC _libVLC;
-        private MediaPlayer _mediaPlayer;
-
+        private readonly LibVLC _libVLC;
+        private readonly MediaPlayer _mediaPlayer;
         public bool IsPlaying { get => _mediaPlayer.IsPlaying; }
 
         public event Action<Track>? TrackChanged;
@@ -26,7 +29,7 @@ namespace majestic_player.infrastructure.Models
 
         public async Task PlayAsync(Track track)
         {
-            if (track == null) throw new ArgumentNullException(nameof(track));
+            ArgumentNullException.ThrowIfNull(track);
 
             using var media = new Media(_libVLC, new Uri(track.Source));
             await Task.Run(() => _mediaPlayer.Play(media));
@@ -34,6 +37,27 @@ namespace majestic_player.infrastructure.Models
             TrackChanged?.Invoke(track);
         }
 
+        public async Task PlayAsync(Stream stream)
+        {
+            ArgumentNullException.ThrowIfNull(stream);
+
+            //using var media = new Media(_libVLC, new Uri(uri));
+
+            StreamMediaInput mediaInput = new StreamMediaInput(stream);
+
+            using var media = new Media(_libVLC, mediaInput);
+
+            await Task.Run(() => _mediaPlayer.Play(media));
+        }
+
+        public async Task PlayAsync(string uri)
+        {
+            ArgumentNullException.ThrowIfNull(uri);
+
+            using var media = new Media(_libVLC, uri, FromType.FromLocation);
+
+            await Task.Run(() => _mediaPlayer.Play(media));
+        }
         public void PlayPause()
         {
             _mediaPlayer.SetPause(_mediaPlayer.IsPlaying);

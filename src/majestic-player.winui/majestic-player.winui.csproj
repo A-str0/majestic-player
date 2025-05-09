@@ -40,18 +40,32 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250401001" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
     <PackageReference Include="ReactiveUI" Version="20.2.45" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\majestic-player.core\majestic-player.core.csproj" />
     <ProjectReference Include="..\majestic-player.infrastructure\majestic-player.infrastructure.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="libvlc\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Views\LibraryTabView.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\LibraryTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\SearchTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

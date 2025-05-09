@@ -13,6 +13,10 @@ namespace majestic_player.core.Interfaces
         public event Action? EndReached;
         
         public Task PlayAsync(Track track);
+        public Task PlayAsync(Stream stream);
+        public Task PlayAsync(string uri);
+
+
         public void PlayPause();
         public void SetVolume(float volume);
 

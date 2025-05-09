@@ -7,34 +7,31 @@
     xmlns:vm="using:majestic_player.winui.ViewModels"
     xmlns:models="using:majestic_player.core.Models"
     xmlns:local="using:majestic_player.winui"
+    xmlns:views="using:majestic_player.winui.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="majestic-player.winui">
-    
+
     <Grid>
+        <Grid.Resources>
+            <local:ViewModelToViewConverter x:Key="ViewModelToViewConverter"/>
+        </Grid.Resources>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
 
-        <!-- Track List -->
-        <ScrollViewer Grid.Row="0">
-            <StackPanel>
-                <Button Content="Add Folder" Command="{x:Bind DataContext.AddFolderCommand}" Margin="5"/>
-                <ListBox x:Name="TrackList" ItemsSource="{x:Bind DataContext.AllTracks}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="models:Track">
-                            <Button Content="{Binding Title}"
-                                    Command="{Binding DataContext.PlayTrackCommand, ElementName=RootWindow}"
-                                    CommandParameter="{Binding}"
-                                    HorizontalContentAlignment="Left"
-                                    Width="300"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-        </ScrollViewer>
+        <!-- TabControl для переключения вкладок -->
+        <TabView Grid.Row="0">
+            <TabViewItem Header="Search">
+                <views:SearchTabView DataContext="{Binding CurrentViewModel, Converter={StaticResource ViewModelToViewConverter}}"/>
+            </TabViewItem>
+            <TabViewItem Header="Library">
+                <views:LibraryTabView DataContext="{Binding CurrentViewModel, Converter={StaticResource ViewModelToViewConverter}}"/>
+            </TabViewItem>
+        </TabView>
         
         <!-- Footer Panel -->
         <Border Grid.Row="1" Background="#333333" Padding="10">

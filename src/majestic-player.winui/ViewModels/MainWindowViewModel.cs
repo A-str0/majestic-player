@@ -33,17 +33,20 @@ public partial class MainWindowViewModel : ReactiveObject
     private readonly TorrentSearchService _searchService;
     #endregion
 
-    private ReadOnlyObservableCollection<Track> _allTracks;
-    public ReadOnlyObservableCollection<Track> AllTracks => _allTracks;
-
-    private ReadOnlyObservableCollection<string> _mediaFolders;
-    public ReadOnlyObservableCollection<string> MediaFolders => _mediaFolders;
-
     public Track? CurrentTrack => _playbackQueueService?.CurrentTrack;
 
+    private readonly SearchTabViewModel _searchTabViewModel;
+    private readonly LibraryTabViewModel _libraryTabViewModel;
+    private object _currentViewModel;
+    public object CurrentViewModel
+    {
+        get => _currentViewModel;
+        set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
+    }
+
     #region Commands
-    public ReactiveCommand<Unit, Unit> AddFolderCommand { get; private set; }
-    public ReactiveCommand<Track?, Unit> PlayTrackCommand { get; private set; }
+    public ReactiveCommand<int, Unit> SelectTabCommand { get; private set; }
+
     public ICommand PlayPauseCommand { get; private set; }
     public ICommand NextCommand { get; private set; }
     public ICommand PreviousCommand { get; private set; }
@@ -54,8 +57,7 @@ public partial class MainWindowViewModel : ReactiveObject
         Console.WriteLine("Started");
 
         // Setup Commands
-        AddFolderCommand = ReactiveCommand.CreateFromTask(AddFolderDialogAsync);
-        PlayTrackCommand = ReactiveCommand.CreateFromTask<Track?>(PlayTrack);
+        SelectTabCommand = ReactiveCommand.CreateFromTask<int>(SelectTab);
 
         PlayPauseCommand = ReactiveCommand.Create(PlayPause);
         NextCommand = ReactiveCommand.Create(PlayNextTrackInQueue);
@@ -67,69 +69,8 @@ public partial class MainWindowViewModel : ReactiveObject
         _audioService = serviceProvider.GetRequiredService<IAudioService>();
 
         _libraryService = serviceProvider.GetRequiredService<LibraryService>();
-        _mediaHandlerService = serviceProvider.GetRequiredService<IMediaHandlerService>();
         _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
-            _searchService = serviceProvider.GetRequiredService<TorrentSearchService>();
 
-        // Setup observers
-        LoadFolders();
-        LoadTracks();
-    }
-
-    private async Task LoadFolders()
-    {
-        Console.WriteLine("Loading folders...");
-
-        _mediaHandlerService?.Folders
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Bind(out _mediaFolders)
-            .Do(_ => UpdateTracksAsync()?.GetAwaiter().GetResult())
-            .DisposeMany()
-            .Subscribe();
-
-        Console.WriteLine("Folders loaded");
-    }
-
-    private async Task LoadTracks()
-    {
-        Console.WriteLine("Loading tracks...");
-
-        await _libraryService.LoadTracksAsync();
-
-        _libraryService?.Tracks
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Bind(out _allTracks)
-            .DisposeMany()
-            .Subscribe();
-
-        //_libraryService.Tracks
-        //    .ObserveOn(RxApp.MainThreadScheduler)
-        //    .Bind(out _allTracks)
-        //    .Do(async _ => await UpdateTracksAsync())
-        //    .DisposeMany()
-        //    .Subscribe();
-
-        Console.WriteLine("Tracks loaded");
-    }
-
-    public async Task PlayTrack(Track? track)
-    {
-        if (track == null)
-        {
-            Debug.WriteLine("Track is null");
-            return;
-        }
-
-        Debug.WriteLine($"Track {track.Title} is playing");
-
-        if (_playbackQueueService.Queue.Count() == 0)
-        {
-            Debug.WriteLine($"Queue was created");
-
-            _playbackQueueService.CreateQueue(track, AllTracks);
-        }
-
-        await _audioService.PlayAsync(track);
     }
 
     public void PlayPause() => _audioService?.PlayPause();
@@ -162,39 +103,14 @@ public partial class MainWindowViewModel : ReactiveObject
         await _audioService.PlayAsync(prevTrack);
     }
 
-    public async Task AddFolderDialogAsync()
-    {
-        Debug.WriteLine($"Add folder dialog appeared");
 
-        var folderPicker = new FolderPicker
+    public async Task SelectTab(int tabIndex)
+    {
+        CurrentViewModel = tabIndex switch
         {
-            ViewMode = PickerViewMode.List
+            0 => _searchTabViewModel,
+            1 => _libraryTabViewModel,
+            _ => throw new ArgumentOutOfRangeException(nameof(tabIndex))
         };
-        folderPicker.FileTypeFilter.Add("*");
-
-        IntPtr hwnd = WindowNative.GetWindowHandle(App.CurrentWindow);
-        InitializeWithWindow.Initialize(folderPicker, hwnd);
-
-        var folder = await folderPicker.PickSingleFolderAsync();
-
-        if (folder != null)
-        {
-            string path = folder.Path;
-            if (!string.IsNullOrEmpty(path))
-            {
-                _mediaHandlerService.AddFolder(path);
-
-                await _mediaHandlerService.ScanFolderForAudioAsync(path);
-            }
-        }
-
-        //await UpdateTracksAsync();
-    }
-
-    private async Task? UpdateTracksAsync()
-    {
-        Console.WriteLine("Updating tracks due to folder change...");
-        await _libraryService?.LoadTracksAsync();
-        Console.WriteLine("Tracks updated");
     }
 }
