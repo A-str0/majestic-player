@@ -51,7 +51,8 @@ public class MediaHandlerService : IMediaHandlerService
                 Album = file.Tag.Album,
                 Duration = file.Properties.Duration,
                 Year = (ushort)file.Tag.Year,
-                Source = filePath
+                Source = filePath,
+                FileName = Path.GetFileNameWithoutExtension(filePath),
             };
         }
         catch (Exception e)
@@ -104,8 +105,10 @@ public class MediaHandlerService : IMediaHandlerService
                 string trackHash = ComputeStreamHash(stream);
 
                 using var memoryStream = new MemoryStream();
-                await stream.CopyToAsync(memoryStream);
-                memoryStream.Position = 0; 
+                byte[] buffer = new byte[128 * 1024];
+                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                await memoryStream.WriteAsync(buffer, 0, bytesRead);
+                memoryStream.Position = 0;
 
                 Track track = await Task.Run(() =>
                 {
@@ -118,7 +121,8 @@ public class MediaHandlerService : IMediaHandlerService
                         Album = file.Tag.Album,
                         Duration = file.Properties.Duration,
                         Year = (ushort)file.Tag.Year,
-                        Source = source
+                        Source = source,
+                        FileName = Path.GetFileNameWithoutExtension(filePath),
                     };
                 });
 

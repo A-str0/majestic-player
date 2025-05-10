@@ -91,7 +91,7 @@ namespace majestic_player.winui.ViewModels
 
                 foreach (var file in await _searchService.GetTorrentMetadata(torrentResult))
                 {
-                    Debug.WriteLine($"Torrent file: {file.Title}");
+                    Debug.WriteLine($"Torrent file: {file.FilePath}");
 
                     _torrentFiles.Add(file);
                 }
@@ -121,8 +121,8 @@ namespace majestic_player.winui.ViewModels
 
             TorrentFileMetadata metadata = (TorrentFileMetadata)e.ClickedItem;
 
-            IHttpStream stream = await _searchService.StreamAsync(metadata.MagnetLink, metadata.Title);
-
+            IHttpStream stream = await _searchService.StreamAsync(metadata.MagnetLink, metadata.FilePath);
+            
             await _audioService.PlayAsync(stream.FullUri.ToString());
         }
     }

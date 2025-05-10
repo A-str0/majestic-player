@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using DynamicData;
 using majestic_player.core.Interfaces;
 using majestic_player.core.Models;
-using majestic_player.infrastructure.Models;
 using majestic_player.infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;

@@ -89,6 +89,7 @@ namespace majestic_player.infrastructure.Services
         public async void AudioPlayer_EndReached()
         {
             Track nextTrack = ToNextTrackInQueue();
+            if (nextTrack == null) return;
             await _audioPlayer.PlayAsync(nextTrack);
         }
     }

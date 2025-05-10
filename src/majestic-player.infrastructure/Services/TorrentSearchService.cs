@@ -22,18 +22,19 @@ namespace majestic_player.infrastructure.Services
     public class TorrentSearchService : ISearchService<TorrentResult>
     {
         // TODO: Remade
-        private const string API = "http://apibay.org/";
-        private const string CAHCE_FOLDER_PATH = "C:\\Users\\magesty_\\AppData\\Roaming\\MajesticPlayer\\Cache\\";
+        private const string CAHCE_FOLDER_PATH = "C:\\Users\\magesty_\\AppData\\Roaming\\MajesticPlayer\\Cache\\"; // TODO: Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
         private const int HTTP_LISTENING_PORT = 12345;
 
         private readonly string _routableAddress = $"http://127.0.0.1:{HTTP_LISTENING_PORT}/";
-        private readonly Dictionary<string, TorrentManager> _torrentManagers = new Dictionary<string, TorrentManager>();
         private IHttpStream httpStream = null;
 
+        private const string API = "http://apibay.org/";
         private readonly static HttpClient sharedClient = new HttpClient()
         {
             BaseAddress = new Uri(API),
         };
+
+        private readonly Dictionary<string, TorrentManager> _torrentManagers = new Dictionary<string, TorrentManager>();
 
         public ClientEngine Engine { get; }
 
@@ -156,10 +157,21 @@ namespace majestic_player.infrastructure.Services
         public async Task<List<TorrentFileMetadata>> GetTorrentMetadata(TorrentResult torrentResult)
         {
             var magnetLink = torrentResult.MagnetLink;
+            TorrentManager torrentManager = _torrentManagers[magnetLink];
+
+            if (torrentManager.HasMetadata)
+            {
+                Debug.WriteLine($"{magnetLink} already has metadata");
+
+                return torrentManager.Files.Select(f => new TorrentFileMetadata()
+                {
+                    MagnetLink = magnetLink,
+                    FilePath = f.Path,
+                }).ToList();
+            }
 
             Debug.WriteLine($"Downloading metadata...");
 
-            TorrentManager torrentManager = _torrentManagers[magnetLink];
 
             // TOOD: Remade this
             // Some debugging
@@ -175,7 +187,7 @@ namespace majestic_player.infrastructure.Services
             {
                 files.Add(new TorrentFileMetadata 
                 { 
-                    Title = file.Path, 
+                    FilePath = file.Path, 
                     MagnetLink = magnetLink 
                 });
 

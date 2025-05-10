@@ -13,6 +13,7 @@ namespace majestic_player.core.Models
         private TimeSpan _duration = TimeSpan.FromSeconds(0);
         private UInt16 _year = 0;
         private string? _source = String.Empty;
+        private string _fileName = String.Empty;
         private SourceType _sourceType;
 
         public Guid Id 
@@ -55,6 +56,12 @@ namespace majestic_player.core.Models
         { 
             get => _source; 
             set => SetProperty(ref _source, value); 
+        }
+
+        public string FileName
+        {
+            get => _fileName;
+            set => SetProperty(ref _fileName, value);
         }
 
         public SourceType SourceType 

@@ -8,7 +8,7 @@ namespace majestic_player.core.Models
 {
     public class TorrentFileMetadata
     {
-        public string Title { get; set; }
+        public string FilePath { get; set; }
         public string MagnetLink { get; set; }
     }
 }

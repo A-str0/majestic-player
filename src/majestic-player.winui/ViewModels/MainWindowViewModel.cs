@@ -103,7 +103,6 @@ public partial class MainWindowViewModel : ReactiveObject
         await _audioService.PlayAsync(prevTrack);
     }
 
-
     public async Task SelectTab(int tabIndex)
     {
         CurrentViewModel = tabIndex switch
