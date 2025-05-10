@@ -20,7 +20,7 @@ namespace majestic_player.core.Models
             get => _id; 
             set => SetProperty(ref _id, value); 
         }
-        public required string? Hash
+        public string? Hash
         {
             get => _hash??throw new Exception("Hash is null!");
             set => SetProperty(ref _hash, value??throw new Exception("New hash is null!"));

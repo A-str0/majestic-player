@@ -24,11 +24,11 @@ namespace majestic_player.winui
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        public MainWindowViewModel DataContext { get; set; } = new();
+
         public MainWindow()
         {
             this.InitializeComponent();
         }
-
-        public MainWindowViewModel DataContext { get; set; } = new();
     }
 }
