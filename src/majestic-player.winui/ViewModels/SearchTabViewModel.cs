@@ -15,6 +15,7 @@ using majestic_player.core.Models;
 using majestic_player.infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
+using MonoTorrent.Client;
 using MonoTorrent.Streaming;
 using ReactiveUI;
 
@@ -33,8 +34,8 @@ namespace majestic_player.winui.ViewModels
         private readonly ObservableCollection<TorrentResult> _searchResults = [];
         public ObservableCollection<TorrentResult> SearchResults => _searchResults;
 
-        private readonly ObservableCollection<TorrentFileMetadata> _torrentFiles = [];
-        public ObservableCollection<TorrentFileMetadata> TorrentFiles => _torrentFiles;
+        private readonly ObservableCollection<Track> _torrentFiles = [];
+        public ObservableCollection<Track> TorrentFiles => _torrentFiles;
 
         private string _searchQuery = "Linkin Park";
         public string SearchQuery
@@ -57,6 +58,7 @@ namespace majestic_player.winui.ViewModels
             _searchService = serviceProvider.GetRequiredService<TorrentSearchService>();
             _mediaHandlerService = serviceProvider.GetRequiredService<IMediaHandlerService>();
             _audioService = serviceProvider.GetRequiredService<IAudioService>();
+            _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
         }
 
         private async Task SearchAsync()
@@ -83,26 +85,7 @@ namespace majestic_player.winui.ViewModels
             }
         }
 
-        private async Task ReloadTorrentFilesListAsync(TorrentResult torrentResult)
-        {
-            try
-            {
-                _torrentFiles.Clear();
-
-                foreach (var file in await _searchService.GetTorrentMetadata(torrentResult))
-                {
-                    Debug.WriteLine($"Torrent file: {file.FilePath}");
-
-                    _torrentFiles.Add(file);
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Error in ReloadFilesAsync: {e.Message}");
-                throw;
-            }
-        }
-
+        TorrentManager torrentManager;
         public async Task ResultsList_ItemClick(object sender, ItemClickEventArgs e) 
         {
             Debug.WriteLine("ResultsListItem clicked");
@@ -110,23 +93,36 @@ namespace majestic_player.winui.ViewModels
             if (e.ClickedItem == null)
                 throw new ArgumentNullException(nameof(e));
 
-            await _searchService.PrepareTorrentManager(((TorrentResult)e.ClickedItem).MagnetLink);
+            TorrentResult torrentResult = (TorrentResult)e.ClickedItem;
 
-            await ReloadTorrentFilesListAsync((TorrentResult)e.ClickedItem);
+            // TODO: Dispose torrent manager
+            //if (torrentManager != null)
+            //    torrentManager.
+            torrentManager = await _searchService.PrepareTorrentManager(torrentResult.MagnetLink);
+
+            _torrentFiles.Clear();
+            foreach (var file in await _searchService.GetTorrentMetadata(torrentResult))
+            {
+                Debug.WriteLine($"Torrent file: {file.Title}, {file.FileName}");
+
+                _torrentFiles.Add(file);
+            }
+
+            // TODO:
+            //_playbackQueueService.CreateQueue(_torrentFiles[0], _torrentFiles);
         }
 
         public async Task TorrentFiles_ItemClick(object sender, ItemClickEventArgs e)
         {
             Debug.WriteLine("TorrentFilesListItem clicked");
 
-            TorrentFileMetadata metadata = (TorrentFileMetadata)e.ClickedItem;
+            Track track = (Track)e.ClickedItem;
 
-            IHttpStream stream = await _searchService.StreamAsync(metadata.MagnetLink, metadata.FilePath);
-            
-            //Track track = _mediaHandlerService.GetTrackMetadataStream()
+            Debug.WriteLine($"Playing: {track.Title} - {track.Artist} | {track.Album}");
 
-            await _audioService.PlayAsync(stream.FullUri.ToString());
+            IHttpStream stream = await _searchService.StreamAsync(track.Source, track.FileName);
 
+            await _audioService.PlayAsync(track, stream.FullUri.ToString());
         }
     }
 }

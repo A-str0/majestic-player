@@ -9,6 +9,7 @@ using System.IO;
 using MonoTorrent.Client;
 using MonoTorrent;
 using MonoTorrent.Streaming;
+using majestic_player.core.Enums;
 
 public class MediaHandlerService(LibraryService libraryService) : IMediaHandlerService, IDisposable
 {
@@ -84,53 +85,41 @@ public class MediaHandlerService(LibraryService libraryService) : IMediaHandlerS
         }
     }
 
-    /// <summary>
-    /// Get file metadata in Stream
-    /// </summary>
-    /// <param name="stream">Stream where file locates</param>
-    /// <param name="filePath">Path to file in stream</param>
-    /// <param name="source"></param>
-    /// <returns>Track object</returns>
-    public async Task<Track> GetTrackMetadataStream(Stream stream, string filePath, string source)
+    public async Task<Track> GetTrackMetadataTorrent(object m, object f, string magnetLink)
     {
+        TorrentManager manager = (TorrentManager)m;
+        ITorrentManagerFile file = (ITorrentManagerFile)f;
+
         try
         {
-            using (stream)
+
+            using var stream = await manager.StreamProvider.CreateStreamAsync(file, false, CancellationToken.None);
+            var buffer = new byte[128 * 1024];
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+
+            using var memoryStream = new MemoryStream(buffer, 0, bytesRead);
+            using var tagFile = TagLib.File.Create(new StreamFileAbstraction("temp_audio_path", memoryStream, memoryStream));
+            return new Track
             {
-                string trackHash = ComputeStreamHash(stream);
-
-                using var memoryStream = new MemoryStream();
-                byte[] buffer = new byte[128 * 1024];
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-                await memoryStream.WriteAsync(buffer, 0, bytesRead);
-                memoryStream.Position = 0;
-
-                Track track = await Task.Run(() =>
-                {
-                    using var file = TagLib.File.Create(new StreamFileAbstraction(Path.GetFileName(filePath), memoryStream, memoryStream));
-                    return new Track
-                    {
-                        Hash = trackHash,
-                        Title = file.Tag.Title ?? Path.GetFileNameWithoutExtension(filePath),
-                        Artist = file.Tag.FirstPerformer ?? "ADAPTIVEREADING",
-                        Album = file.Tag.Album,
-                        Duration = file.Properties.Duration,
-                        Year = (ushort)file.Tag.Year,
-                        Source = source,
-                        FileName = Path.GetFileNameWithoutExtension(filePath),
-                    };
-                });
-
-                return track;
-            }
+                Title = tagFile.Tag.Title ?? file.Path,
+                Artist = tagFile.Tag.FirstPerformer ?? "Unknown",
+                Album = tagFile.Tag.Album ?? "Unknown",
+                Duration = tagFile.Properties.Duration,
+                Year = (ushort)(tagFile.Tag.Year > 0 ? tagFile.Tag.Year : 0),
+                Source = magnetLink,
+                FileName = file.Path,
+                SourceType = SourceType.Torrent,
+                Hash = ComputeStreamHash(stream) // Раскомментируйте и реализуйте, если нужен хэш
+            };
         }
         catch (Exception e)
         {
             Debug.WriteLine($"Error extracting metadata: {e.Message}");
             return new Track
             {
-                Title = Path.GetFileName(filePath),
-                Source = source,
+                Title = Path.GetFileName(file.Path),
+                FileName = file.Path,
+                Source = magnetLink,
                 Hash = "Unknown"
             };
         }
@@ -155,20 +144,6 @@ public class MediaHandlerService(LibraryService libraryService) : IMediaHandlerS
 
         await _libraryService.AddTracksAsync(tracks);
     }
-
-    public async Task ScanStreamsForAudio(List<Stream> streams, string filePath, string magnetLink)
-    {
-        var tracks = new List<Track>();
-        foreach (var stream in streams)
-        {
-            Track track = await GetTrackMetadataStream(stream, filePath, magnetLink);
-
-            tracks.Add(track);
-        }
-
-        await _libraryService.AddTracksAsync(tracks);
-    }
-
     public void AddFolder(string folderPath)
     {
         Debug.WriteLine($"Adding folder: {folderPath}");
@@ -185,8 +160,6 @@ public class MediaHandlerService(LibraryService libraryService) : IMediaHandlerS
 
     public string ComputeStreamHash(Stream stream)
     {
-        return "sgdasfad";
-
         using SHA256 sha256 = SHA256.Create();
         byte[] hashBytes = sha256.ComputeHash(stream);
         return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();

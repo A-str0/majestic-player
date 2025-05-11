@@ -35,10 +35,11 @@ namespace majestic_player.infrastructure.Services
         };
 
         private readonly Dictionary<string, TorrentManager> _torrentManagers = new Dictionary<string, TorrentManager>();
+        private readonly IMediaHandlerService _mediaHandlerService;
 
         public ClientEngine Engine { get; }
 
-        public TorrentSearchService()
+        public TorrentSearchService(IMediaHandlerService mediaHandlerService)
         {
             var settingBuilder = new EngineSettingsBuilder
             {
@@ -65,6 +66,8 @@ namespace majestic_player.infrastructure.Services
             };
 
             Engine = new ClientEngine(settingBuilder.ToSettings());
+
+            _mediaHandlerService = mediaHandlerService;
         }
 
         public async Task<List<TorrentResult>> SearchAsync(string query, string category = "101")
@@ -154,49 +157,48 @@ namespace majestic_player.infrastructure.Services
             }
         }
 
-        public async Task<List<TorrentFileMetadata>> GetTorrentMetadata(TorrentResult torrentResult)
+        public async Task<List<Track>> GetTorrentMetadata(TorrentResult torrentResult)
         {
             var magnetLink = torrentResult.MagnetLink;
             TorrentManager torrentManager = _torrentManagers[magnetLink];
 
-            if (torrentManager.HasMetadata)
-            {
-                Debug.WriteLine($"{magnetLink} already has metadata");
-
-                return torrentManager.Files.Select(f => new TorrentFileMetadata()
-                {
-                    MagnetLink = magnetLink,
-                    FilePath = f.Path,
-                }).ToList();
-            }
-
             Debug.WriteLine($"Downloading metadata...");
-
 
             // TOOD: Remade this
             // Some debugging
             torrentManager.PeerConnected += (o, e) => { Debug.WriteLine("First peer connected"); };
-            torrentManager.PeersFound += (o, e) => { Debug.WriteLine("Some peers found"); };
+            torrentManager.PeersFound += (o, e) => { Debug.WriteLine("Peer found"); };
             torrentManager.PieceHashed += (o, e) => { Debug.WriteLine("Piece hashed"); };
             torrentManager.TorrentStateChanged += (o, e) => { Debug.WriteLine($"Torrent state changed: {e.NewState}"); };
 
+            if (torrentManager.State == TorrentState.Stopped)
+                await torrentManager.StartAsync();
+
             await torrentManager.WaitForMetadataAsync(CancellationToken.None); // TODO: CancellationToken
 
-            List<TorrentFileMetadata> files = [];
+            List<Track> tracks = new List<Track>();
             foreach (var file in torrentManager.Files)
             {
-                files.Add(new TorrentFileMetadata 
+                if (torrentManager.State == TorrentState.Stopped)
+                    await torrentManager.StartAsync();
+
+                Track track = new Track() 
                 { 
-                    FilePath = file.Path, 
-                    MagnetLink = magnetLink 
-                });
+                    Title = file.Path,
+                    Source = magnetLink,
+                    FileName = file.Path,
+                    SourceType = core.Enums.SourceType.Torrent,
+                };
+
+                //Track track = await _mediaHandlerService.GetTrackMetadataTorrent(torrentManager, file, magnetLink);
+                tracks.Add(track);
 
                 await torrentManager.SetFilePriorityAsync(file, Priority.DoNotDownload);
             }
 
-            Debug.WriteLine($"Metadata downloaded. Files count: {files.Count}");
+            Debug.WriteLine($"Metadata downloaded. Files count: {tracks.Count}");
 
-            return files;
+            return tracks;
         }
 
         public async Task<IHttpStream> StreamAsync(string magnetLink, string fileName)
@@ -228,4 +230,5 @@ namespace majestic_player.infrastructure.Services
             return httpStream;
         }
     }
+
 }

@@ -107,6 +107,7 @@ public partial class MainWindowViewModel : ReactiveObject
         _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
 
         _playbackQueueService.CurrentTrackChanged += PlaybackQueueService_CurrentTrackChanged;
+        _audioService.TrackChanged += PlaybackQueueService_CurrentTrackChanged;
 
         _audioService.EndReached += PlaybackQueueService_EndReached;
         _audioService.PlayingStateChanged += AudioService_PlayingStateChanged;

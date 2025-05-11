@@ -12,10 +12,9 @@ namespace majestic_player.core.Interfaces
         public Task<IEnumerable<string>> GetLocalAudioFilesAsync(string folderPath);
 
         public Track GetTrackMetadataLocal(string filePath);
-        public Task<Track> GetTrackMetadataStream(Stream stream, string filePath, string source);
+        public Task<Track> GetTrackMetadataTorrent(object manager, object file, string magnetLink);
 
         public Task ScanFolderForAudioAsync(string folderPath);
-        public Task ScanStreamsForAudio(List<Stream> streams, string filePath, string magnetLink);
 
         protected string ComputeFileHash(string filePath);
         protected string ComputeStreamHash(Stream stream);

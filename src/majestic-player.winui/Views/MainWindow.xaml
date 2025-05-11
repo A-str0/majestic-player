@@ -84,14 +84,14 @@
                     <SymbolIcon Symbol="Next"/>
                 </Button>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding DataContext.PositionValue, Mode=OneWay, FallbackValue='0:00', Converter={StaticResource TimeSpanToStringConverter}, ElementName=RootWindow}" Margin="10,0"/>
+                    <TextBlock Text="{Binding DataContext.PositionValue, Mode=OneWay, FallbackValue='', Converter={StaticResource TimeSpanToStringConverter}, ElementName=RootWindow}" Margin="10,0"/>
                     <ProgressBar Value="{x:Bind DataContext.ProgressValue, Mode=OneWay}" 
                                  Minimum="0" 
                                  Maximum="1" 
                                  Width="300" 
                                  Foreground="LightBlue" 
                                  Background="Gray"/>
-                    <TextBlock Text="{Binding DataContext.CurrentTrack.Duration, Mode=OneWay, FallbackValue='0:00', Converter={StaticResource TimeSpanToStringConverter}, ElementName=RootWindow}" Margin="10,0"/>
+                    <TextBlock Text="{Binding DataContext.CurrentTrack.Duration, Mode=OneWay, FallbackValue='', Converter={StaticResource TimeSpanToStringConverter}, ElementName=RootWindow}" Margin="10,0"/>
                 </StackPanel>
             </StackPanel>
 

@@ -43,26 +43,14 @@ namespace majestic_player.infrastructure.Models
             TrackChanged?.Invoke(track);
         }
 
-        public async Task PlayAsync(Stream stream)
+        public async Task PlayAsync(Track track, string uri)
         {
-            ArgumentNullException.ThrowIfNull(stream);
-
-            //using var media = new Media(_libVLC, new Uri(uri));
-
-            StreamMediaInput mediaInput = new StreamMediaInput(stream);
-
-            using var media = new Media(_libVLC, mediaInput);
-
-            await Task.Run(() => _mediaPlayer.Play(media));
-        }
-
-        public async Task PlayAsync(string uri)
-        {
-            ArgumentNullException.ThrowIfNull(uri);
+            ArgumentNullException.ThrowIfNull(track);
 
             using var media = new Media(_libVLC, uri, FromType.FromLocation);
-
             await Task.Run(() => _mediaPlayer.Play(media));
+
+            TrackChanged?.Invoke(track);
         }
 
         public void PlayPause()

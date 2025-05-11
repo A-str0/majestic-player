@@ -14,8 +14,7 @@ namespace majestic_player.core.Interfaces
         public event Action<bool>? PlayingStateChanged;
         
         public Task PlayAsync(Track track);
-        public Task PlayAsync(Stream stream);
-        public Task PlayAsync(string uri);
+        public Task PlayAsync(Track track, string uri);
 
         public float GetCurrentPosition();
 

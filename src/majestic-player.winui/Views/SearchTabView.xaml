@@ -74,10 +74,10 @@
                 ItemClick="{x:Bind DataContext.TorrentFiles_ItemClick}"
                 Background="#1E1E1E">
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:TorrentFileMetadata">
+                    <DataTemplate x:DataType="models:Track">
                         <StackPanel Orientation="Horizontal" Margin="5">
                             <SymbolIcon Symbol="Audio" Foreground="#0078D4" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding FilePath}" Foreground="#FFFFFF"/>
+                            <TextBlock Text="{Binding Title}" Foreground="#FFFFFF"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>

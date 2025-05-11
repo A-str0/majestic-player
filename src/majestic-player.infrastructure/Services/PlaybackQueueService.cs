@@ -11,7 +11,7 @@ using ReactiveUI;
 
 namespace majestic_player.infrastructure.Services
 {
-    public class PlaybackQueueService(IAudioService audioPlayer) : IPlaybackQueueService
+    public class PlaybackQueueService : IPlaybackQueueService
     {
         private Track? _currentTrack;
         public Track? CurrentTrack
@@ -19,6 +19,8 @@ namespace majestic_player.infrastructure.Services
             get => _currentTrack;
             private set
             {
+                Debug.WriteLine($"New CurrentTrack: {value}");
+
                 CurrentTrackChanged?.Invoke(value);
                 _currentTrack = value;
             }
@@ -37,8 +39,6 @@ namespace majestic_player.infrastructure.Services
                 }
 
                 _currentIndex = Math.Clamp(value, 0, _queue.Count);
-                //Debug.WriteLine($"New QueueIndex: {_currentIndex}");
-                //Debug.WriteLine($"Queue length: {_queue.Count}");
                 CurrentTrack = _queue[_currentIndex];
             }
         }
@@ -48,6 +48,21 @@ namespace majestic_player.infrastructure.Services
 
         public event Action? QueueChanged;
         public event Action<Track?>? CurrentTrackChanged;
+
+        public PlaybackQueueService(IAudioService audioPlayer)
+        {
+            audioPlayer.TrackChanged += AudioPlayer_TrackChanged;
+        }
+
+        private void AudioPlayer_TrackChanged(Track track)
+        {
+            Debug.WriteLine("TrackChanged");
+
+            ClearQueue();
+
+            _queue.Add(track);
+            CurrentIndex = 0;
+        }
 
         public void AddTracksToQueue(IEnumerable<Track> tracks)
         {
