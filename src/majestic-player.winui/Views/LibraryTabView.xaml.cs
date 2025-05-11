@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using CommunityToolkit.Mvvm.Messaging;
 using majestic_player.winui.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -26,6 +28,22 @@ namespace majestic_player.winui.Views
         public LibraryTabView()
         {
             this.InitializeComponent();
+
+            WeakReferenceMessenger.Default.Register<Msg_ListView_SelectItems>(this, (r, msg) =>
+            {
+                SetSelectedIndex(msg.Index);
+            });
         }
+
+        public void SetSelectedIndex(int i)
+        {
+            TracksList.SelectedIndex = i;
+        }
+
+    }
+
+    public class Msg_ListView_SelectItems
+    {
+        public int Index{ get; set; }
     }
 }

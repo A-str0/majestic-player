@@ -34,7 +34,12 @@ public partial class MainWindowViewModel : ReactiveObject
     private readonly TorrentSearchService _searchService;
     #endregion
 
-    public Track? CurrentTrack => _playbackQueueService?.CurrentTrack;
+    private Track? _currentTrack;
+    public Track? CurrentTrack
+    {
+        get => _currentTrack;
+        set => this.RaiseAndSetIfChanged(ref _currentTrack, value);
+    }
 
     private readonly SearchTabViewModel _searchTabViewModel;
     private readonly LibraryTabViewModel _libraryTabViewModel;
@@ -72,6 +77,7 @@ public partial class MainWindowViewModel : ReactiveObject
         _libraryService = serviceProvider.GetRequiredService<LibraryService>();
         _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
 
+        _playbackQueueService.CurrentTrackChanged += PlaybackQueueService_CurrentTrackChanged;
     }
 
     public void PlayPause() => _audioService?.PlayPause();
@@ -112,5 +118,15 @@ public partial class MainWindowViewModel : ReactiveObject
             1 => _libraryTabViewModel,
             _ => throw new ArgumentOutOfRangeException(nameof(tabIndex))
         };
+    }
+
+    public void PlaybackQueueService_CurrentTrackChanged(Track? track)
+    {
+        if (track == null)
+            return;
+
+        Debug.WriteLine($"CurrentTrack changed: {track}");
+
+        CurrentTrack = track;
     }
 }

@@ -6,6 +6,7 @@
     xmlns:vm="using:majestic_player.winui.ViewModels"
     xmlns:models="using:majestic_player.core.Models"
     xmlns:local="using:majestic_player.winui.Views"
+    xmlns:custom="using:majestic_player.winui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     mc:Ignorable="d">
@@ -21,6 +22,7 @@
 
         <!-- Список треков -->
         <ListView Grid.Row="1" 
+                  x:Name="TracksList"
                   SelectionMode="Single"
                   IsItemClickEnabled="True"
                   ItemsSource="{x:Bind DataContext.AllTracks}"

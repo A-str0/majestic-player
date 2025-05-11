@@ -51,18 +51,21 @@
             </Grid.Background>
             
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="0.3*"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="0.3*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Информация о треке -->
-            <TextBlock 
-                Text="{x:Bind DataContext.CurrentTrack.Title, Mode=OneWay, FallbackValue='Нет трека'}" 
-                Foreground="White" 
-                FontSize="16"
-                Grid.Column="0"
-                VerticalAlignment="Center"/>
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Text="{x:Bind DataContext.CurrentTrack.Title, Mode=OneWay, FallbackValue='Нет трека'}" 
+                           FontWeight="Bold" 
+                           FontSize="16"
+                           Foreground="#FFFFFF"/>
+                <TextBlock Text="{x:Bind DataContext.CurrentTrack.Artist, Mode=OneWay, FallbackValue=''}" 
+                           FontSize="10"
+                           Foreground="#CCCCCC"/>
+            </StackPanel>
 
             <!-- Управление воспроизведением -->
             <StackPanel Orientation="Horizontal" 
