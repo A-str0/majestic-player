@@ -123,7 +123,10 @@ namespace majestic_player.winui.ViewModels
 
             IHttpStream stream = await _searchService.StreamAsync(metadata.MagnetLink, metadata.FilePath);
             
+            //Track track = _mediaHandlerService.GetTrackMetadataStream()
+
             await _audioService.PlayAsync(stream.FullUri.ToString());
+
         }
     }
 }

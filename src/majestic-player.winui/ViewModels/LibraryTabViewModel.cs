@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.DirectoryServices;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DynamicData;
 using majestic_player.core.Interfaces;
 using majestic_player.core.Models;
 using majestic_player.infrastructure.Services;
@@ -28,11 +28,11 @@ namespace majestic_player.winui.ViewModels
         private readonly PlaybackQueueService _playbackQueueService;
         #endregion
 
-        private ReadOnlyObservableCollection<Track> _allTracks;
-        public ReadOnlyObservableCollection<Track> AllTracks => _allTracks;
+        private ObservableCollection<Track> _allTracks = [];
+        public ObservableCollection<Track> AllTracks => _allTracks;
 
-        private ReadOnlyObservableCollection<string> _mediaFolders;
-        public ReadOnlyObservableCollection<string> MediaFolders => _mediaFolders;
+        private ObservableCollection<string> _mediaFolders = [];
+        public ObservableCollection<string> MediaFolders => _mediaFolders;
 
         public ReactiveCommand<Unit, Unit> AddFolderCommand { get; private set; }
 
@@ -51,23 +51,28 @@ namespace majestic_player.winui.ViewModels
             _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
 
             // Setup Observers
-            _mediaHandlerService?.Folders
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Bind(out _mediaFolders)
-                .Do(_ => UpdateTracksAsync()?.GetAwaiter().GetResult())
-                .DisposeMany()
-            .Subscribe();
-
             _libraryService.LoadTracksAsync();
-
-            _libraryService?.Tracks
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Bind(out _allTracks)
-                .DisposeMany()
-                .Subscribe();
         }
 
         public void TracksList_ItemClick(object sender, ItemClickEventArgs e) => PlayTrack(e.ClickedItem as Track);
+
+        private async Task ReloadTracksAsync(string folderPath)
+        {
+            try
+            {
+                _allTracks.Clear();
+
+                foreach (var res in await _libraryService.GetAllTracksAsync())
+                {
+                    _allTracks.Add(res);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Error in SearchAsync: {e.Message}");
+                throw;
+            }
+        }
 
         public async Task PlayTrack(Track track)
         {
@@ -112,17 +117,10 @@ namespace majestic_player.winui.ViewModels
                     _mediaHandlerService.AddFolder(path);
 
                     await _mediaHandlerService.ScanFolderForAudioAsync(path);
+
+                    await ReloadTracksAsync(path);
                 }
             }
-
-            //await UpdateTracksAsync();
-        }
-
-        private async Task? UpdateTracksAsync()
-        {
-            Console.WriteLine("Updating tracks due to folder change...");
-            await _libraryService?.LoadTracksAsync();
-            Console.WriteLine("Tracks updated");
         }
     }
 }

@@ -20,6 +20,7 @@ using System.Windows;
 using System.Diagnostics;
 using DynamicData.Binding;
 using DynamicData.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace majestic_player.winui.ViewModels;
 
