@@ -10,19 +10,14 @@ using MonoTorrent.Client;
 using MonoTorrent;
 using MonoTorrent.Streaming;
 
-public class MediaHandlerService : IMediaHandlerService
+public class MediaHandlerService(LibraryService libraryService) : IMediaHandlerService, IDisposable
 {
-    private readonly LibraryService _libraryService;
+    private readonly LibraryService _libraryService = libraryService;
 
     private static readonly string[] SupportedExtensions = { ".mp3", ".flac", ".wav", ".ogg" };
 
     private readonly SourceList<string> _folders = new SourceList<string>();
     public IObservable<IChangeSet<string>> Folders { get => _folders.Connect(); } // TODO: setting saving
- 
-    public MediaHandlerService(LibraryService libraryService)
-    {
-        _libraryService = libraryService;
-    }
 
     public async Task<IEnumerable<string>> GetLocalAudioFilesAsync(string folderPath)
     {
@@ -195,5 +190,10 @@ public class MediaHandlerService : IMediaHandlerService
         using SHA256 sha256 = SHA256.Create();
         byte[] hashBytes = sha256.ComputeHash(stream);
         return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+    }
+
+    public void Dispose()
+    {
+        throw new NotImplementedException();
     }
 }

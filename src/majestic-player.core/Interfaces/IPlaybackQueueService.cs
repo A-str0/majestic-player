@@ -12,8 +12,6 @@ namespace majestic_player.core.Interfaces
 
         public event Action? QueueChanged;
 
-        public Track? CurrentTrack { get; set; }
-
         public void AddTracksToQueue(IEnumerable<Track> tracks);
         public void CreateQueue(Track startTrack, IEnumerable<Track> tracks);
         public void Shuffle();
