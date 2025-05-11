@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Runtime.InteropServices.WindowsRuntime;
 using CommunityToolkit.Mvvm.Messaging;
 using majestic_player.winui.ViewModels;
@@ -13,6 +14,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using ReactiveUI;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -37,7 +39,14 @@ namespace majestic_player.winui.Views
 
         public void SetSelectedIndex(int i)
         {
-            TracksList.SelectedIndex = i;
+            try
+            {
+                TracksList.SelectedIndex = i;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
         }
 
     }

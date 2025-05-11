@@ -16,11 +16,9 @@ using System.Reactive.Linq;
 using DynamicData;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
-using System.Windows;
 using System.Diagnostics;
-using DynamicData.Binding;
-using DynamicData.Diagnostics;
-using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Dispatching;
 
 namespace majestic_player.winui.ViewModels;
 
@@ -41,6 +39,22 @@ public partial class MainWindowViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _currentTrack, value);
     }
 
+    private DispatcherTimer _timer;
+
+    private TimeSpan _positionValue;
+    public TimeSpan PositionValue
+    {
+        get => _positionValue;
+        set => this.RaiseAndSetIfChanged(ref _positionValue, value);
+    }
+
+    private float _progressValue;
+    public float ProgressValue
+    {
+        get => _progressValue;
+        set => this.RaiseAndSetIfChanged(ref _progressValue, value);
+    }
+
     private readonly SearchTabViewModel _searchTabViewModel;
     private readonly LibraryTabViewModel _libraryTabViewModel;
     private object _currentViewModel;
@@ -50,24 +64,28 @@ public partial class MainWindowViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
     }
 
+    private readonly DispatcherQueue _dispatcherQueue;
+
     #region Commands
     public ReactiveCommand<int, Unit> SelectTabCommand { get; private set; }
 
-    public ICommand PlayPauseCommand { get; private set; }
-    public ICommand NextCommand { get; private set; }
-    public ICommand PreviousCommand { get; private set; }
+    public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; private set; }
+    public ReactiveCommand<Unit, Unit> NextCommand { get; private set; }
+    public ReactiveCommand<Unit, Unit> PreviousCommand { get; private set; }
     #endregion
 
     public MainWindowViewModel()
     {
         Console.WriteLine("Started");
 
+        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
         // Setup Commands
         SelectTabCommand = ReactiveCommand.CreateFromTask<int>(SelectTab);
 
         PlayPauseCommand = ReactiveCommand.Create(PlayPause);
-        NextCommand = ReactiveCommand.Create(PlayNextTrackInQueue);
-        PreviousCommand = ReactiveCommand.Create(PlayPreviousTrackInQueue);
+        NextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackInQueue);
+        PreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackInQueue);
 
         // Setup Services
         IServiceProvider serviceProvider = App.Services.CreateScope().ServiceProvider;
@@ -78,6 +96,14 @@ public partial class MainWindowViewModel : ReactiveObject
         _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
 
         _playbackQueueService.CurrentTrackChanged += PlaybackQueueService_CurrentTrackChanged;
+        _playbackQueueService.EndReached += PlaybackQueueService_EndReached;
+
+        _timer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(500) // Обновляем каждые 500 мс
+        };
+        _timer.Start();
+        _timer.Tick += Timer_Tick;
     }
 
     public void PlayPause() => _audioService?.PlayPause();
@@ -120,7 +146,7 @@ public partial class MainWindowViewModel : ReactiveObject
         };
     }
 
-    public void PlaybackQueueService_CurrentTrackChanged(Track? track)
+    private void PlaybackQueueService_CurrentTrackChanged(Track? track)
     {
         if (track == null)
             return;
@@ -128,5 +154,21 @@ public partial class MainWindowViewModel : ReactiveObject
         Debug.WriteLine($"CurrentTrack changed: {track}");
 
         CurrentTrack = track;
+    }
+
+    private void PlaybackQueueService_EndReached()
+    {
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await PlayNextTrackInQueue();
+        });
+    }
+
+    private void Timer_Tick(object sender, object e)
+    {
+        if (CurrentTrack == null) return;
+
+        ProgressValue = _audioService.GetCurrentPosition();
+        PositionValue = (TimeSpan)(_progressValue * CurrentTrack.Duration);
     }
 }

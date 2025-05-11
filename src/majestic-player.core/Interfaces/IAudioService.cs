@@ -16,6 +16,7 @@ namespace majestic_player.core.Interfaces
         public Task PlayAsync(Stream stream);
         public Task PlayAsync(string uri);
 
+        public float GetCurrentPosition();
 
         public void PlayPause();
         public void SetVolume(float volume);

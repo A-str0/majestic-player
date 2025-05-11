@@ -58,10 +58,13 @@ namespace majestic_player.infrastructure.Models
 
             await Task.Run(() => _mediaPlayer.Play(media));
         }
+
         public void PlayPause()
         {
             _mediaPlayer.SetPause(_mediaPlayer.IsPlaying);
         }
+
+        public float GetCurrentPosition() => _mediaPlayer.Position;
 
         public void SetVolume(float volume)
         {

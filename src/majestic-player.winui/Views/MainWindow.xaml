@@ -15,6 +15,7 @@
     <Grid Background="#1E1E1E">
         <Grid.Resources>
             <local:ViewModelToViewConverter x:Key="ViewModelToViewConverter"/>
+            <local:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter"/>
         </Grid.Resources>
 
         <Grid.RowDefinitions>
@@ -82,13 +83,14 @@
                     <SymbolIcon Symbol="Next"/>
                 </Button>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="0:00" Margin="10,0"/>
-                    <Rectangle Width="200" Height="4" Fill="Gray" Margin="5,0">
-                        <Rectangle.Clip>
-                            <RectangleGeometry Rect="0,0,50,4"/>
-                        </Rectangle.Clip>
-                    </Rectangle>
-                    <TextBlock Text="3:31" Margin="10,0"/>
+                    <TextBlock Text="{Binding DataContext.PositionValue, Mode=OneWay, FallbackValue='0:00', Converter={StaticResource TimeSpanToStringConverter}, ElementName=RootWindow}" Margin="10,0"/>
+                    <ProgressBar Value="{x:Bind DataContext.ProgressValue, Mode=OneWay}" 
+                                 Minimum="0" 
+                                 Maximum="1" 
+                                 Width="400" 
+                                 Foreground="LightBlue" 
+                                 Background="Gray"/>
+                    <TextBlock Text="{Binding DataContext.CurrentTrack.Duration, Mode=OneWay, FallbackValue='0:00', Converter={StaticResource TimeSpanToStringConverter}, ElementName=RootWindow}" Margin="10,0"/>
                 </StackPanel>
             </StackPanel>
 

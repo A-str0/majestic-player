@@ -51,6 +51,7 @@ namespace majestic_player.infrastructure.Services
 
         public event Action? QueueChanged;
         public event Action<Track?>? CurrentTrackChanged;
+        public event Action? EndReached;
 
         public PlaybackQueueService(IAudioService audioPlayer)
         {
@@ -120,9 +121,10 @@ namespace majestic_player.infrastructure.Services
 
         public async void AudioPlayer_EndReached()
         {
-            Track nextTrack = ToNextTrackInQueue();
-            if (nextTrack == null) return;
-            await _audioPlayer.PlayAsync(nextTrack);
+            //Track nextTrack = ToNextTrackInQueue();
+            //if (nextTrack == null) return;
+            EndReached?.Invoke();
+            //await _audioPlayer.PlayAsync(nextTrack);
         }
     }
 }
