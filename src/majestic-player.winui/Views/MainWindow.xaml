@@ -16,6 +16,7 @@
         <Grid.Resources>
             <local:ViewModelToViewConverter x:Key="ViewModelToViewConverter"/>
             <local:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter"/>
+            <local:BooleanToPlayPauseSymbolConverter x:Key="BooleanToPlayPauseSymbolConverter"/>
         </Grid.Resources>
 
         <Grid.RowDefinitions>
@@ -70,16 +71,16 @@
 
             <!-- Управление воспроизведением -->
             <StackPanel Orientation="Horizontal" 
-                Grid.Column="1" 
-                VerticalAlignment="Center" 
-                HorizontalAlignment="Center">
-                <Button Command="{x:Bind DataContext.PreviousCommand}">
+                        Grid.Column="1" 
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Center">
+                <Button Command="{x:Bind DataContext.PreviousCommand}" Margin="4,0">
                     <SymbolIcon Symbol="Previous"/>
                 </Button>
-                <Button Command="{x:Bind DataContext.PlayPauseCommand}">
-                    <SymbolIcon Symbol="Pause"/>
+                <Button Command="{x:Bind DataContext.PlayPauseCommand}" Margin="4,0">
+                    <SymbolIcon Symbol="{Binding DataContext.IsPlaying, Mode=OneWay, Converter={StaticResource BooleanToPlayPauseSymbolConverter}, ElementName=RootWindow}"/>
                 </Button>
-                <Button Command="{x:Bind DataContext.NextCommand}">
+                <Button Command="{x:Bind DataContext.NextCommand}" Margin="4,0">
                     <SymbolIcon Symbol="Next"/>
                 </Button>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -87,7 +88,7 @@
                     <ProgressBar Value="{x:Bind DataContext.ProgressValue, Mode=OneWay}" 
                                  Minimum="0" 
                                  Maximum="1" 
-                                 Width="400" 
+                                 Width="300" 
                                  Foreground="LightBlue" 
                                  Background="Gray"/>
                     <TextBlock Text="{Binding DataContext.CurrentTrack.Duration, Mode=OneWay, FallbackValue='0:00', Converter={StaticResource TimeSpanToStringConverter}, ElementName=RootWindow}" Margin="10,0"/>

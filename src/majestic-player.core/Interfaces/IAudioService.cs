@@ -11,6 +11,7 @@ namespace majestic_player.core.Interfaces
         
         public event Action<Track>? TrackChanged;
         public event Action? EndReached;
+        public event Action<bool>? PlayingStateChanged;
         
         public Task PlayAsync(Track track);
         public Task PlayAsync(Stream stream);
@@ -20,6 +21,7 @@ namespace majestic_player.core.Interfaces
 
         public void PlayPause();
         public void SetVolume(float volume);
+        public void SetPosition(float pos);
 
         public void Dispose();
     }

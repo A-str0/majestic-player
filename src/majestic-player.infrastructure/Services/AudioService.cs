@@ -16,6 +16,7 @@ namespace majestic_player.infrastructure.Models
 
         public event Action<Track>? TrackChanged;
         public event Action? EndReached;
+        public event Action<bool>? PlayingStateChanged;
 
         public AudioService()
         {
@@ -25,7 +26,12 @@ namespace majestic_player.infrastructure.Models
             _mediaPlayer = new MediaPlayer(_libVLC);
 
             _mediaPlayer.EndReached += MediaPlayer_EndReached;
+            _mediaPlayer.Paused += MediaPlayer_Paused;
+            _mediaPlayer.Playing += MediaPayer_Playing;
         }
+
+        private void MediaPlayer_Paused(object? sender, EventArgs e) => PlayingStateChanged?.Invoke(false);
+        private void MediaPayer_Playing(object? sender, EventArgs e) => PlayingStateChanged?.Invoke(true);
 
         public async Task PlayAsync(Track track)
         {
@@ -69,6 +75,13 @@ namespace majestic_player.infrastructure.Models
         public void SetVolume(float volume)
         {
             _mediaPlayer.Volume = (int)volume;
+        }
+
+        public void SetPosition(float pos)
+        {
+            if (_mediaPlayer.Length <= 0) return; 
+            
+            _mediaPlayer.Position = Math.Clamp(pos, 0f, 1f); 
         }
 
         public void Dispose()

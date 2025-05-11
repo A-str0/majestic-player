@@ -11,10 +11,8 @@ using ReactiveUI;
 
 namespace majestic_player.infrastructure.Services
 {
-    public class PlaybackQueueService : IPlaybackQueueService
+    public class PlaybackQueueService(IAudioService audioPlayer) : IPlaybackQueueService
     {
-        private readonly IAudioService _audioPlayer;
-
         private Track? _currentTrack;
         public Track? CurrentTrack
         {
@@ -22,7 +20,6 @@ namespace majestic_player.infrastructure.Services
             private set
             {
                 CurrentTrackChanged?.Invoke(value);
-                //Debug.WriteLine($"New CurrentTrack: {_currentIndex}");
                 _currentTrack = value;
             }
         }
@@ -51,22 +48,11 @@ namespace majestic_player.infrastructure.Services
 
         public event Action? QueueChanged;
         public event Action<Track?>? CurrentTrackChanged;
-        public event Action? EndReached;
-
-        public PlaybackQueueService(IAudioService audioPlayer)
-        {
-            _audioPlayer = audioPlayer;
-            _audioPlayer.EndReached += AudioPlayer_EndReached;
-        }
 
         public void AddTracksToQueue(IEnumerable<Track> tracks)
         {
-            //Debug.WriteLine($"Tracks Count: {tracks.Count()}");
             foreach (var track in tracks)
-            {
-                //Debug.WriteLine($"Track {track.Title}");
                 _queue.Add(track);
-            }
         }
 
         public void CreateQueue(Track startTrack, IEnumerable<Track> tracks)
@@ -76,7 +62,6 @@ namespace majestic_player.infrastructure.Services
             _queue.Add(startTrack);
             AddTracksToQueue(tracks.Where(x => x != startTrack));
             CurrentIndex = 0;
-            //AddTracksToQueue(tracks);
         }
 
         public void Shuffle()
@@ -117,14 +102,6 @@ namespace majestic_player.infrastructure.Services
         {
             _queue.Clear();
             CurrentIndex = -1;
-        }
-
-        public async void AudioPlayer_EndReached()
-        {
-            //Track nextTrack = ToNextTrackInQueue();
-            //if (nextTrack == null) return;
-            EndReached?.Invoke();
-            //await _audioPlayer.PlayAsync(nextTrack);
         }
     }
 }

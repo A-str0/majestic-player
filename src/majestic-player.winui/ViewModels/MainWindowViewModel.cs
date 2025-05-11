@@ -39,6 +39,13 @@ public partial class MainWindowViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _currentTrack, value);
     }
 
+    private bool _isPlaying;
+    public bool IsPlaying
+    {
+        get => _isPlaying;
+        set => this.RaiseAndSetIfChanged(ref _isPlaying, value);
+    }
+
     private DispatcherTimer _timer;
 
     private TimeSpan _positionValue;
@@ -72,6 +79,8 @@ public partial class MainWindowViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> NextCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> PreviousCommand { get; private set; }
+
+    public ReactiveCommand<float, Unit> SetTrackPositionCommand { get; private set; }
     #endregion
 
     public MainWindowViewModel()
@@ -87,6 +96,8 @@ public partial class MainWindowViewModel : ReactiveObject
         NextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackInQueue);
         PreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackInQueue);
 
+        SetTrackPositionCommand = ReactiveCommand.Create<float>(SetTrackPosition);
+
         // Setup Services
         IServiceProvider serviceProvider = App.Services.CreateScope().ServiceProvider;
 
@@ -96,14 +107,18 @@ public partial class MainWindowViewModel : ReactiveObject
         _playbackQueueService = serviceProvider.GetRequiredService<PlaybackQueueService>();
 
         _playbackQueueService.CurrentTrackChanged += PlaybackQueueService_CurrentTrackChanged;
-        _playbackQueueService.EndReached += PlaybackQueueService_EndReached;
+
+        _audioService.EndReached += PlaybackQueueService_EndReached;
+        _audioService.PlayingStateChanged += AudioService_PlayingStateChanged;
+
 
         _timer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromMilliseconds(500) // Обновляем каждые 500 мс
+            Interval = TimeSpan.FromMilliseconds(500)
         };
-        _timer.Start();
         _timer.Tick += Timer_Tick;
+
+        IsPlaying = false;
     }
 
     public void PlayPause() => _audioService?.PlayPause();
@@ -144,6 +159,21 @@ public partial class MainWindowViewModel : ReactiveObject
             1 => _libraryTabViewModel,
             _ => throw new ArgumentOutOfRangeException(nameof(tabIndex))
         };
+    }
+
+    public void SetTrackPosition(float value) => _audioService.SetPosition(value);
+
+    private void AudioService_PlayingStateChanged(bool obj)
+    {
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            IsPlaying = obj;
+
+            if (IsPlaying)
+                _timer.Start();
+            else
+                _timer.Stop();
+        });
     }
 
     private void PlaybackQueueService_CurrentTrackChanged(Track? track)
