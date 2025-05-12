@@ -18,6 +18,7 @@ namespace majestic_player.infrastructure.Services
         private readonly SourceCache<Track, Guid> _tracksCache = new(x => x.Id);
         public IObservable<IChangeSet<Track, Guid>> Tracks => _tracksCache.Connect();
 
+        public event Action<Track>? TrackAdded;
         public LibraryService(IDbContextFactory<AppDBContext> contextFactory)
         {
             _contextFactory = contextFactory;
@@ -81,6 +82,8 @@ namespace majestic_player.infrastructure.Services
 
             var result = await context.SaveChangesAsync();
             Debug.WriteLine($"Saved {result} tracks to the database.");
+
+            TrackAdded?.Invoke( track );
         }
 
         public async Task<bool> IsTrackExists(string? hash)

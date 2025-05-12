@@ -19,6 +19,7 @@ using WinRT.Interop;
 using System.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 
 namespace majestic_player.winui.ViewModels;
 
@@ -80,6 +81,8 @@ public partial class MainWindowViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> NextCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> PreviousCommand { get; private set; }
 
+    public ReactiveCommand<Track, Unit> AddTrackToLibraryCommand { get; private set; }
+
     public ReactiveCommand<float, Unit> SetTrackPositionCommand { get; private set; }
     #endregion
 
@@ -95,6 +98,8 @@ public partial class MainWindowViewModel : ReactiveObject
         PlayPauseCommand = ReactiveCommand.Create(PlayPause);
         NextCommand = ReactiveCommand.CreateFromTask(PlayNextTrackInQueue);
         PreviousCommand = ReactiveCommand.CreateFromTask(PlayPreviousTrackInQueue);
+
+        AddTrackToLibraryCommand = ReactiveCommand.CreateFromTask<Track>(AddTrackToLibrary);
 
         SetTrackPositionCommand = ReactiveCommand.Create<float>(SetTrackPosition);
 
@@ -163,6 +168,16 @@ public partial class MainWindowViewModel : ReactiveObject
     }
 
     public void SetTrackPosition(float value) => _audioService.SetPosition(value);
+
+    public async Task AddTrackToLibrary(Track track)
+    {
+        if (track == null)
+            return;
+
+        Debug.WriteLine($"Like for {track.Title}");
+
+        await _libraryService.AddTrackAsync(track);
+    }
 
     private void AudioService_PlayingStateChanged(bool obj)
     {

@@ -130,9 +130,9 @@ namespace majestic_player.winui.ViewModels
 
             Track track = (Track)e.ClickedItem;
 
-            Debug.WriteLine($"Playing: {track.Title} - {track.Artist} | {track.Album}");
-
             IHttpStream stream = await _searchService.StreamAsync(track.Source, track.FileName);
+
+            _playbackQueueService.CreateQueue(track, []);
 
             await _audioService.PlayAsync(track, stream.FullUri.ToString());
         }

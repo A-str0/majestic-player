@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection.Metadata;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -184,8 +185,16 @@ namespace majestic_player.infrastructure.Services
                 if (torrentManager.State == TorrentState.Stopped)
                     await torrentManager.StartAsync();
 
-                Track track = new Track() 
+                string input = $"{magnetLink}{file.Path}";
+
+                using var sha1 = SHA1.Create();
+                byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+                byte[] hashBytes = sha1.ComputeHash(inputBytes);
+                string hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+
+                Track track = new Track()  
                 { 
+                    Hash = hash,
                     Title = file.Path,
                     Source = magnetLink,
                     FileName = file.Path,
@@ -207,7 +216,7 @@ namespace majestic_player.infrastructure.Services
 
         public async Task<IHttpStream> StreamAsync(string magnetLink, string fileName)
         {
-            TorrentManager torrentManager = _torrentManagers[magnetLink];
+            TorrentManager torrentManager = await PrepareTorrentManager(magnetLink);
 
             await torrentManager.WaitForMetadataAsync(CancellationToken.None); // TODO: CancellationToken
 

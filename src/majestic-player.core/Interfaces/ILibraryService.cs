@@ -8,6 +8,8 @@ namespace majestic_player.core.Interfaces
     /// </summary>
     public interface ILibraryService
     {
+        public event Action<Track>? TrackAdded;
+
         public Task LoadTracksAsync();
         public Task<List<Track>> GetAllTracksAsync();
         public Task AddTracksAsync(IEnumerable<Track> tracks);

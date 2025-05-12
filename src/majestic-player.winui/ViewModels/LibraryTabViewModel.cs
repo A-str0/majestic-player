@@ -61,7 +61,11 @@ namespace majestic_player.winui.ViewModels
             _libraryService.LoadTracksAsync();
 
             ReloadTracksAsync();
+
+            _libraryService.TrackAdded += _libraryService_TrackAdded;
         }
+
+        private void _libraryService_TrackAdded(Track obj) => ReloadTracksAsync();
 
         public void TracksList_ItemClick(object sender, ItemClickEventArgs e) => PlayTrack(e.ClickedItem as Track);
 

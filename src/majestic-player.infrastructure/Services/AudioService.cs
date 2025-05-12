@@ -6,7 +6,9 @@ using System.Xml.Serialization;
 using LibVLCSharp.Shared;
 using majestic_player.core.Interfaces;
 using majestic_player.core.Models;
+using majestic_player.infrastructure.Services;
 using MonoTorrent;
+using MonoTorrent.Streaming;
 
 namespace majestic_player.infrastructure.Models
 {
@@ -20,8 +22,12 @@ namespace majestic_player.infrastructure.Models
         public event Action? EndReached;
         public event Action<bool>? PlayingStateChanged;
 
-        public AudioService()
+        private readonly TorrentSearchService _torrentService;
+
+        public AudioService(TorrentSearchService torrentService)
         {
+            _torrentService = torrentService;
+
             Core.Initialize();
             
             _libVLC = new LibVLC();
@@ -39,7 +45,22 @@ namespace majestic_player.infrastructure.Models
         {
             ArgumentNullException.ThrowIfNull(track);
 
-            using var media = new Media(_libVLC, new Uri(track.Source));
+            Media media;
+            switch (track.SourceType)
+            {
+                case core.Enums.SourceType.Local:
+                    media = new Media(_libVLC, new Uri(track.Source));
+                    break;
+                case core.Enums.SourceType.Torrent:
+                    IHttpStream stream = await _torrentService.StreamAsync(track.Source, track.FileName);
+                    media = new Media(_libVLC, stream.FullUri.ToString(), FromType.FromLocation);
+                    await Task.Run(() => _mediaPlayer.Play(media));
+                    break;
+                default:
+                    media = new Media(_libVLC, new Uri(track.Source));
+                    break;
+            }
+
             await Task.Run(() => _mediaPlayer.Play(media));
             
             TrackChanged?.Invoke(track);
