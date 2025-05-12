@@ -5,13 +5,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:majestic_player.winui.ViewModels"
     xmlns:models="using:majestic_player.core.Models"
-    xmlns:local="using:majestic_player.winui.Views"
+    xmlns:local="using:majestic_player.winui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     d:DataContext="{d:DesignInstance Type=vm:SearchTabViewModel}"
     mc:Ignorable="d">
 
     <Grid Background="#1E1E1E">
+        <Grid.Resources>
+            <local:BooleanToProgressStateConverter x:Key="BooleanToProgressStateConverter"/>
+        </Grid.Resources>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
@@ -39,49 +43,53 @@
             </Grid.ColumnDefinitions>
 
             <!-- Список торрентов -->
-            <ListView 
-                x:Name="ResultsList"
-                Grid.Column="0"
-                SelectionMode="Single"
-                IsItemClickEnabled="True"
-                ItemsSource="{x:Bind DataContext.SearchResults}" 
-                ItemClick="{x:Bind DataContext.ResultsList_ItemClick}"
-                Background="#1E1E1E"
-                Clip="{x:Null}">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:TorrentResult">
-                        <StackPanel Orientation="Horizontal" Margin="5">
-                            <SymbolIcon Symbol="Download" Foreground="#CCCCCC" Margin="0,0,10,0"/>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Title}" FontWeight="Bold" Foreground="#FFFFFF"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Seeders}" Foreground="#00FF00" Margin="10,0,0,0"/>
-                                    <TextBlock Text="{Binding Leechers}" Foreground="#FF0000" Margin="10,0,0,0"/>
+            <StackPanel Grid.Column="0">
+                <ListView 
+                    x:Name="ResultsList"
+                    Grid.Column="0"
+                    SelectionMode="Single"
+                    IsItemClickEnabled="True"
+                    ItemsSource="{x:Bind DataContext.SearchResults}" 
+                    ItemClick="{x:Bind DataContext.ResultsList_ItemClick}"
+                    Background="#1E1E1E"
+                    Clip="{x:Null}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:TorrentResult">
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <SymbolIcon Symbol="Download" Foreground="#CCCCCC" Margin="0,0,10,0"/>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Seeders}" Foreground="#00FF00" Margin="10,0,0,0"/>
+                                        <TextBlock Text="{Binding Leechers}" Foreground="#FF0000" Margin="10,0,0,0"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </StackPanel>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
 
             <!-- Список файлов торрента -->
-            <ListView 
-                x:Name="Files"
-                Grid.Column="1"
-                SelectionMode="Single"
-                IsItemClickEnabled="True"
-                ItemsSource="{x:Bind DataContext.TorrentFiles}"
-                ItemClick="{x:Bind DataContext.TorrentFiles_ItemClick}"
-                Background="#1E1E1E">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Track">
-                        <StackPanel Orientation="Horizontal" Margin="5">
-                            <SymbolIcon Symbol="Audio" Foreground="#0078D4" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Title}" Foreground="#FFFFFF"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <StackPanel Grid.Column="1">
+                <ListView 
+                    x:Name="Files"
+                    SelectionMode="Single"
+                    IsItemClickEnabled="True"
+                    ItemsSource="{x:Bind DataContext.TorrentFiles}"
+                    ItemClick="{x:Bind DataContext.TorrentFiles_ItemClick}"
+                    Background="#1E1E1E">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Track">
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <SymbolIcon Symbol="Audio" Foreground="#0078D4" Margin="0,0,10,0"/>
+                                <TextBlock Text="{Binding Title}" Foreground="#FFFFFF"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ProgressBar Width="auto" IsIndeterminate="{x:Bind DataContext.IsLoading, Mode=TwoWay}" ShowPaused="False" ShowError="False" Margin="50, 10, 50, 0" />
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

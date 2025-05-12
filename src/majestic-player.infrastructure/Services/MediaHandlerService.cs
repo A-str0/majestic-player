@@ -10,6 +10,11 @@ using MonoTorrent.Client;
 using MonoTorrent;
 using MonoTorrent.Streaming;
 using majestic_player.core.Enums;
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 public class MediaHandlerService(LibraryService libraryService) : IMediaHandlerService, IDisposable
 {

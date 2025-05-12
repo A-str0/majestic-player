@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using majestic_player.core.Interfaces;
 using majestic_player.core.Models;
 using majestic_player.infrastructure.Services;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using MonoTorrent.Client;
@@ -42,6 +43,13 @@ namespace majestic_player.winui.ViewModels
         {
             get => _searchQuery;
             set => this.RaiseAndSetIfChanged(ref _searchQuery, value);
+        }
+
+        private bool _isLoading = false;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => this.RaiseAndSetIfChanged(ref _isLoading, value);
         }
 
         public ReactiveCommand<Unit, Unit> SearchCommand { get; private set; }
@@ -90,6 +98,8 @@ namespace majestic_player.winui.ViewModels
         {
             Debug.WriteLine("ResultsListItem clicked");
 
+            IsLoading = true;
+
             if (e.ClickedItem == null)
                 throw new ArgumentNullException(nameof(e));
 
@@ -107,6 +117,8 @@ namespace majestic_player.winui.ViewModels
 
                 _torrentFiles.Add(file);
             }
+
+            IsLoading = false;
 
             // TODO:
             //_playbackQueueService.CreateQueue(_torrentFiles[0], _torrentFiles);

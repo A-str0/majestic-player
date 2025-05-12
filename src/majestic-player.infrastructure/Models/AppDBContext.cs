@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using majestic_player.core.Models;
+using System;
+using System.IO;
 
 namespace majestic_player.infrastructure.Models
 {

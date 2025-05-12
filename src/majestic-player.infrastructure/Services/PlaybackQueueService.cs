@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -51,14 +53,14 @@ namespace majestic_player.infrastructure.Services
 
         public PlaybackQueueService(IAudioService audioPlayer)
         {
-            audioPlayer.TrackChanged += AudioPlayer_TrackChanged;
+            //audioPlayer.TrackChanged += AudioPlayer_TrackChanged;
         }
 
         private void AudioPlayer_TrackChanged(Track track)
         {
             Debug.WriteLine("TrackChanged");
 
-            ClearQueue();
+            //ClearQueue();
 
             _queue.Add(track);
             CurrentIndex = 0;

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using majestic_player.core.Helpers;
 using majestic_player.core.Interfaces;
@@ -78,7 +80,8 @@ namespace majestic_player.infrastructure.Services
 
                 Debug.WriteLine($"Searching for: {formatedQuery}");
 
-                using HttpResponseMessage response = await sharedClient.GetAsync($"q.php?q={formatedQuery}&cat={category}");
+                //using HttpResponseMessage response = await sharedClient.GetAsync($"q.php?q={formatedQuery}&cat={category}");
+                using HttpResponseMessage response = await sharedClient.GetAsync($"q.php?q={formatedQuery}");
                 response.EnsureSuccessStatusCode();
 
                 Debug.WriteLine($"API Response: {response.StatusCode}");
@@ -120,10 +123,9 @@ namespace majestic_player.infrastructure.Services
             }
             catch (Exception e)
             {
-                Debug.WriteLine("ATTENTION!!!");
                 Debug.WriteLine(e);
 
-                return new List<TorrentResult> { };
+                return new List<TorrentResult> { new TorrentResult { Title = "Ой... Запрос не дошел до API. Попробуйте еще раз" } };
             }
         }
 
@@ -192,6 +194,8 @@ namespace majestic_player.infrastructure.Services
 
                 //Track track = await _mediaHandlerService.GetTrackMetadataTorrent(torrentManager, file, magnetLink);
                 tracks.Add(track);
+
+                Debug.WriteLine($"Track added: {track.Title}");
 
                 await torrentManager.SetFilePriorityAsync(file, Priority.DoNotDownload);
             }
